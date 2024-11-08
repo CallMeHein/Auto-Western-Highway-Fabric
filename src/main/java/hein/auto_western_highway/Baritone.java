@@ -38,6 +38,9 @@ public class Baritone {
         if (FilenameUtils.getExtension(file.getAbsolutePath()).isEmpty()) {
             file = new File(file.getAbsolutePath() + "." + BaritoneAPI.getSettings().schematicFallbackExtension.value);
         }
+        if (!file.exists()) {
+            throw new RuntimeException("Could not find schematic: " + schematic + ". Aborting");
+        }
         IBuilderProcess builderProcess = BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess();
         builderProcess.build(file.getName(), file, coordinates);
         waitUntilDone(builderProcess);
