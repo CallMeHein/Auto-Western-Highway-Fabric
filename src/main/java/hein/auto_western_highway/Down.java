@@ -64,7 +64,7 @@ public class Down {
 
     public static void downwardScaffold(StepHeight stepDownHeight, BlockPos buildOrigin) {
         Settings settings = BaritoneAPI.getSettings();
-        settings.buildIgnoreExisting.value = stepDownHeight.containsScaffoldBlockingBlocks;
+        settings.buildIgnoreExisting.value = !stepDownHeight.containsScaffoldBlockingBlocks;
         settings.buildRepeat.value = new Vec3i(2, 1, 0);
         settings.buildRepeatCount.value = stepDownHeight.height;
         build("step_scaffold", copyBlock(buildOrigin, -2 * stepDownHeight.height, -stepDownHeight.height, 0));
