@@ -3,7 +3,8 @@ package hein.auto_western_highway;
 import baritone.api.BaritoneAPI;
 import hein.auto_western_highway.types.StepHeight;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -23,16 +24,16 @@ public class AutoWesternHighway implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(
-                    net.minecraft.server.command.CommandManager.literal("autoWesternHighway")
+                    ClientCommandManager.literal("autoWesternHighway")
                             .executes(context -> {
                                 autoWesternHighway();
                                 return 1;
                             })
             );
             dispatcher.register(
-                    net.minecraft.server.command.CommandManager.literal("stopAutoWesternHighway")
+                    ClientCommandManager.literal("stopAutoWesternHighway")
                             .executes(context -> {
                                 MinecraftClient client = MinecraftClient.getInstance();
                                 ClientPlayerEntity player = client.player;
@@ -72,7 +73,6 @@ public class AutoWesternHighway implements ModInitializer {
         BlockPos standingBlock = getStandingBlock(player);
         standingBlock = new BlockPos(standingBlock.getX(), standingBlock.getY(), 0);
         while (true) {
-            sendStatusMessage(player, standingBlock.toString());
             StepHeight stepUpHeight = getStepUpHeight(player, standingBlock);
             if (stepUpHeight.height > 0) {
                 int futureStepDownLength = getFutureStepDownLength(player, standingBlock, stepUpHeight.height);
