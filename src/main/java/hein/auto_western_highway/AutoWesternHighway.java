@@ -39,7 +39,7 @@ public class AutoWesternHighway implements ModInitializer {
                                 ClientPlayerEntity player = client.player;
                                 assert player != null;
                                 if (runningThread != null) {
-                                    runningThread.stop();
+                                    runningThread.interrupt();
                                     BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
                                     sendStatusMessage(player, "Stopping autoWesternHighway...");
                                     return 1;
