@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "auto-western-highway",
+  "version": "${version}",
+  "name": "Auto Western Highway",
+  "description": "A mod to automatically expand the western overworld highway on 2b2t",
+  "authors": [
+    "Hein"
+  ],
+  "contact": {
+    "sources": "https://github.com/CallMeHein/Auto-Western-Highway-Fabric"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/auto-western-highway/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "hein.auto_western_highway.AutoWesternHighway"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.20.4",
+    "java": ">=17",
+    "fabric-api": "*"
+  }
+}
