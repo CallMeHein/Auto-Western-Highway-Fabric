@@ -3,7 +3,24 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
+// Check if the 'minecraft_version' property is set, or throw an error
+if (!project.hasProperty('minecraft_version')) {
+    throw new GradleException("The 'minecraft_version' property is required. Please specify it using '-Pminecraft_version=VERSION'")
+}
+File versionPropertiesFile = file("versions/${minecraft_version}.properties") as File
+if (!versionPropertiesFile.exists()) {
+    throw new GradleException("File " + versionPropertiesFile.getAbsolutePath() + " does not exist")
+}
+Properties versionProperties = new Properties()
+versionProperties.load(new FileInputStream(versionPropertiesFile))
+logger.lifecycle(versionPropertiesFile.getAbsolutePath())
+String minecraft_version = versionProperties.getProperty("minecraft_version")
+String yarn_mappings = versionProperties.getProperty("yarn_mappings")
+String loader_version = versionProperties.getProperty("loader_version")
+String fabric_version = versionProperties.getProperty("fabric_version")
+String baritone_version = versionProperties.getProperty("baritone_version")
+
+version = "${project.mod_version}-mc${minecraft_version}"
 group = project.maven_group
 
 base {
@@ -39,17 +56,18 @@ def urlFile = { url, name, version ->
     return [name: name, version: version]
 }
 
+
 dependencies {
     // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
 
     // Fabric API
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
     // Baritone
-    modImplementation urlFile("https://github.com/cabaletta/baritone/releases/download/v1.10.2/baritone-api-fabric-1.10.2.jar", 'baritone', '1.20.4-1.10.2')
+    modImplementation urlFile("https://github.com/cabaletta/baritone/releases/download/v${baritone_version}/baritone-api-fabric-${baritone_version}.jar", 'baritone', "${minecraft_version}-${baritone_version}")
     // Dependencies of Baritone
     implementation "dev.babbaj:nether-pathfinder:1.5"
 
