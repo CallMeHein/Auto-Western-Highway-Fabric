@@ -13,7 +13,6 @@ if (!versionPropertiesFile.exists()) {
 }
 Properties versionProperties = new Properties()
 versionProperties.load(new FileInputStream(versionPropertiesFile))
-logger.lifecycle(versionPropertiesFile.getAbsolutePath())
 String minecraft_version = versionProperties.getProperty("minecraft_version")
 String yarn_mappings = versionProperties.getProperty("yarn_mappings")
 String loader_version = versionProperties.getProperty("loader_version")
