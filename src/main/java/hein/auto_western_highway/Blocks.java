@@ -45,6 +45,7 @@ public class Blocks {
                 "fern",
                 "flower",
                 "leaves",
+                "lilac",
                 "lily_pad",
                 "nether",
                 "obsidian",
