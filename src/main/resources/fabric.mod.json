@@ -10,7 +10,7 @@
   "contact": {
     "sources": "https://github.com/CallMeHein/Auto-Western-Highway-Fabric"
   },
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/auto-western-highway/icon.png",
   "environment": "*",
   "entrypoints": {
