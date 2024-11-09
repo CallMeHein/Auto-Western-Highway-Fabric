@@ -5,7 +5,6 @@ import baritone.api.Settings;
 import hein.auto_western_highway.types.StepHeight;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,12 +61,14 @@ public class Down {
         return buildOrigin.offset(Y, -1);
     }
 
-    public static void downwardScaffold(StepHeight stepDownHeight, BlockPos buildOrigin) {
+    public static void downwardScaffold(StepHeight stepDownHeight, BlockPos standingBlock) {
+        BlockPos buildOrigin = copyBlock(standingBlock);
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepDownHeight.containsScaffoldBlockingBlocks;
-        settings.buildRepeat.value = new Vec3i(2, 1, 0);
-        settings.buildRepeatCount.value = stepDownHeight.height;
-        build("step_scaffold", copyBlock(buildOrigin, -2 * stepDownHeight.height, -stepDownHeight.height, 0));
+        for (int i = 0; i < stepDownHeight.height; i++) {
+            build("step_scaffold", copyBlock(buildOrigin, -2 * stepDownHeight.height, -stepDownHeight.height, 0));
+            buildOrigin = offsetBlock(buildOrigin, 2, 1, 0);
+        }
         resetSettings();
     }
 

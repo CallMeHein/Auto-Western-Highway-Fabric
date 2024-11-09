@@ -5,15 +5,13 @@ import baritone.api.Settings;
 import hein.auto_western_highway.types.StepHeight;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static hein.auto_western_highway.Baritone.build;
 import static hein.auto_western_highway.Baritone.resetSettings;
-import static hein.auto_western_highway.Blocks.copyBlock;
-import static hein.auto_western_highway.Blocks.getBlocksNameFromBlockPos;
+import static hein.auto_western_highway.Blocks.*;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Up {
@@ -62,12 +60,14 @@ public class Up {
         return buildOrigin.offset(Y, -1);
     }
 
-    public static void upwardScaffold(StepHeight stepUpHeight, BlockPos buildOrigin) {
+    public static void upwardScaffold(StepHeight stepUpHeight, BlockPos standingBlock) {
+        BlockPos buildOrigin = copyBlock(standingBlock);
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepUpHeight.containsScaffoldBlockingBlocks;
-        settings.buildRepeat.value = new Vec3i(-2, 1, 0);
-        settings.buildRepeatCount.value = stepUpHeight.height;
-        build("step_scaffold", copyBlock(buildOrigin).offset(X, -3).offset(Y, 1));
+        for (int i = 0; i < stepUpHeight.height; i++) {
+            build("step_scaffold", copyBlock(buildOrigin).offset(X, -3).offset(Y, 1));
+            buildOrigin = offsetBlock(buildOrigin, -2, 1, 0);
+        }
         resetSettings();
     }
 
