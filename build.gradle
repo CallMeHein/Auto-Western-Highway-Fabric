@@ -18,6 +18,7 @@ String yarn_mappings = versionProperties.getProperty("yarn_mappings")
 String loader_version = versionProperties.getProperty("loader_version")
 String fabric_version = versionProperties.getProperty("fabric_version")
 String baritone_version = versionProperties.getProperty("baritone_version")
+String alternate_baritone_url = versionProperties.getProperty("alternate_baritone_url")
 
 version = "${project.mod_version}-mc${minecraft_version}"
 group = project.maven_group
@@ -66,7 +67,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
     // Baritone
-    modImplementation urlFile("https://github.com/cabaletta/baritone/releases/download/v${baritone_version}/baritone-api-fabric-${baritone_version}.jar", 'baritone', "${minecraft_version}-${baritone_version}")
+    modImplementation urlFile(alternate_baritone_url ?: "https://github.com/cabaletta/baritone/releases/download/v${baritone_version}/baritone-api-fabric-${baritone_version}.jar", 'baritone', "${minecraft_version}-${baritone_version}")
     // Dependencies of Baritone
     implementation "dev.babbaj:nether-pathfinder:1.5"
 
