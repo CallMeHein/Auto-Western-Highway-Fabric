@@ -36,7 +36,6 @@ public class Blocks {
 
     public static boolean isNonTerrainBlock(String block) {
         return Stream.of(
-                "_grass",
                 "_log",
                 "air",
                 "cactus",
@@ -53,6 +52,6 @@ public class Blocks {
                 "petal",
                 "portal",
                 "vine"
-        ).anyMatch(block::contains);
+        ).anyMatch(block::contains) || isScaffoldBlockingBlock(block);
     }
 }
