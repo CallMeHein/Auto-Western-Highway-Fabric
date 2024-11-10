@@ -1,9 +1,12 @@
 package hein.auto_western_highway;
 
+import hein.auto_western_highway.types.BlocknameAndState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -27,11 +30,20 @@ public class Blocks {
                 block.contains("_grass");
     }
 
-    public static List<String> getBlocksNameFromBlockPos(ClientPlayerEntity player, List<BlockPos> rayUpBlockPositions) {
-        return rayUpBlockPositions.stream().map(block ->
+    public static List<String> getBlocksNameFromBlockPositions(ClientPlayerEntity player, List<BlockPos> blockPositions) {
+        return blockPositions.stream().map(block ->
                 Registries.BLOCK.getId(player.clientWorld.getBlockState(block).getBlock())
                         .toString().substring(10) // remove the "minecraft:" prefix
         ).toList();
+    }
+
+    public static List<BlocknameAndState> getBlocknamesAndStatesFromBlockPositions(ClientPlayerEntity player, List<BlockPos> blockPositions) {
+        List<BlocknameAndState> blocknamesAndStates = new ArrayList<>();
+        blockPositions.forEach(blockPos -> {
+            BlockState state = player.clientWorld.getBlockState(blockPos);
+            blocknamesAndStates.add(new BlocknameAndState(Registries.BLOCK.getId(state.getBlock()).toString().substring(10), state));
+        });
+        return blocknamesAndStates;
     }
 
     public static boolean isNonTerrainBlock(String block) {

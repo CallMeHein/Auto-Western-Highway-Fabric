@@ -3,11 +3,14 @@ package hein.auto_western_highway;
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import baritone.api.process.IBuilderProcess;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static hein.auto_western_highway.Constants.buildIgnoreBlocks;
@@ -33,8 +36,8 @@ public class Baritone {
         settings.buildIgnoreBlocks.value = buildIgnoreBlocks;
     }
 
-    public static void build(String schematic, BlockPos coordinates) {
-        File file = new File(new File(BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().minecraft().runDirectory, "schematics"), schematic + ".litematic").getAbsoluteFile();
+    public static void build(ClientPlayerEntity player, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
+        File file = new File(new File(BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().minecraft().runDirectory, "schematics"), schematic.getFileName() + ".litematic").getAbsoluteFile();
         if (FilenameUtils.getExtension(file.getAbsolutePath()).isEmpty()) {
             file = new File(file.getAbsolutePath() + "." + BaritoneAPI.getSettings().schematicFallbackExtension.value);
         }
@@ -42,13 +45,49 @@ public class Baritone {
             throw new RuntimeException("Could not find schematic: " + schematic + ". Aborting");
         }
         IBuilderProcess builderProcess = BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess();
-        builderProcess.build(file.getName(), file, coordinates);
-        waitUntilDone(builderProcess);
+        builderProcess.build(file.getName(), file, buildOrigin);
+        waitUntilDone(player, builderProcess, schematic, buildOrigin);
     }
 
-    private static void waitUntilDone(IBuilderProcess builderProcess) {
+    private static void waitUntilDone(ClientPlayerEntity player, IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
         while (builderProcess.isActive()) {
+            if (builderProcess.isPaused()) {
+                resumeIfPausedForFlowingLiquid(player, builderProcess, schematic, buildOrigin);
+            }
             sleep(250);
+        }
+    }
+
+    private static List<BlockPos> getSchematicBlockPositions(AutoHighwaySchematic schematic, BlockPos buildOrigin) {
+        List<BlockPos> blocks = new ArrayList<>();
+        switch (schematic) {
+            case STEP -> {
+                for (int z = -1; z <= 1; z++) {
+                    blocks.add(new BlockPos(buildOrigin.getX(), buildOrigin.getY(), z));
+                }
+            }
+            case STEP_UP, STEP_DOWN -> {
+                for (int x = 0; x <= 1; x++) {
+                    for (int z = -1; z <= 1; z++) {
+                        blocks.add(new BlockPos(buildOrigin.getX() + x, buildOrigin.getY(), z));
+                    }
+                }
+            }
+            case STEP_SCAFFOLD -> {
+                for (int x = 0; x < 3; x++) {
+                    blocks.add(new BlockPos(buildOrigin.getX() + x, buildOrigin.getY(), 0));
+                }
+            }
+            default -> throw new IllegalStateException("Unknown AutoHighwaySchematic: " + schematic);
+        }
+        return blocks;
+    }
+
+    private static void resumeIfPausedForFlowingLiquid(ClientPlayerEntity player, IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
+        List<BlockPos> blocks = getSchematicBlockPositions(schematic, buildOrigin);
+        boolean containsFlowingWater = Blocks.getBlocknamesAndStatesFromBlockPositions(player, blocks).stream().anyMatch(b -> b.state().contains(Properties.LEVEL_15) && b.state().get(Properties.LEVEL_15) != 0);
+        if (containsFlowingWater) {
+            builderProcess.resume();
         }
     }
 }

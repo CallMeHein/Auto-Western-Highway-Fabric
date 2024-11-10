@@ -5,7 +5,8 @@
   "name": "Auto Western Highway",
   "description": "A mod to automatically expand the western overworld highway on 2b2t",
   "authors": [
-    "Hein"
+    "Hein",
+    "theblazehen"
   ],
   "contact": {
     "sources": "https://github.com/CallMeHein/Auto-Western-Highway-Fabric"

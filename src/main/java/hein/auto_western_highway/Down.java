@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
+import static hein.auto_western_highway.AutoHighwaySchematic.*;
 import static hein.auto_western_highway.Baritone.build;
 import static hein.auto_western_highway.Baritone.resetSettings;
 import static hein.auto_western_highway.Blocks.*;
@@ -17,7 +18,7 @@ import static net.minecraft.util.math.Direction.Axis.Y;
 
 public class Down {
     public static StepHeight getStepDownHeight(ClientPlayerEntity player, BlockPos standingBlock) {
-        List<String> rayDownBlocks = getBlocksNameFromBlockPos(player, getRayDownBlockPositions(standingBlock));
+        List<String> rayDownBlocks = getBlocksNameFromBlockPositions(player, getRayDownBlockPositions(standingBlock));
         StepHeight stepHeight = new StepHeight();
         stepHeight.containsScaffoldBlockingBlocks = rayDownBlocks.stream().anyMatch(Blocks::isScaffoldBlockingBlock);
         stepHeight.height = 0;
@@ -51,22 +52,22 @@ public class Down {
         return blocks.subList(1, blocks.size());
     }
 
-    public static BlockPos stepDown(int count, BlockPos buildOrigin) {
+    public static BlockPos stepDown(ClientPlayerEntity player, int count, BlockPos buildOrigin) {
         buildOrigin = buildOrigin.offset(Y, 1);
         for (int i = 0; i < count; i++) {
-            build("step_down", copyBlock(buildOrigin, -1, -1, -1));
-            build("step", copyBlock(buildOrigin, -2, -2, -1));
+            build(player, STEP_DOWN, copyBlock(buildOrigin, -1, -1, -1));
+            build(player, STEP, copyBlock(buildOrigin, -2, -2, -1));
             buildOrigin = offsetBlock(buildOrigin, -2, -1, 0);
         }
         return buildOrigin.offset(Y, -1);
     }
 
-    public static void downwardScaffold(StepHeight stepDownHeight, BlockPos standingBlock) {
+    public static void downwardScaffold(ClientPlayerEntity player, StepHeight stepDownHeight, BlockPos standingBlock) {
         BlockPos buildOrigin = copyBlock(standingBlock);
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepDownHeight.containsScaffoldBlockingBlocks;
         for (int i = 0; i < stepDownHeight.height; i++) {
-            build("step_scaffold", copyBlock(buildOrigin, -2 * stepDownHeight.height, -stepDownHeight.height, 0));
+            build(player, STEP_SCAFFOLD, copyBlock(buildOrigin, -2 * stepDownHeight.height, -stepDownHeight.height, 0));
             buildOrigin = offsetBlock(buildOrigin, 2, 1, 0);
         }
         resetSettings();

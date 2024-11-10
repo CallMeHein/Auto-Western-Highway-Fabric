@@ -77,11 +77,11 @@ public class AutoWesternHighway implements ModInitializer {
             if (stepUpHeight.height > 0) {
                 int futureStepDownLength = getFutureStepDownLength(player, standingBlock, stepUpHeight.height);
                 if (futureStepDownLength > 0) {
-                    standingBlock = step(standingBlock, futureStepDownLength);
+                    standingBlock = step(player, standingBlock, futureStepDownLength);
                     continue;
                 }
-                upwardScaffold(stepUpHeight, copyBlock(standingBlock));
-                standingBlock = stepUp(stepUpHeight.height, standingBlock);
+                upwardScaffold(player, stepUpHeight, copyBlock(standingBlock));
+                standingBlock = stepUp(player, stepUpHeight.height, standingBlock);
                 continue;
             }
 
@@ -89,14 +89,14 @@ public class AutoWesternHighway implements ModInitializer {
             if (stepDownHeight.height > 0) {
                 int futureStepUpLength = getFutureStepUpLength(player, standingBlock, stepUpHeight.height);
                 if (futureStepUpLength > 0) {
-                    standingBlock = step(standingBlock, futureStepUpLength);
+                    standingBlock = step(player, standingBlock, futureStepUpLength);
                     continue;
                 }
-                downwardScaffold(stepDownHeight, copyBlock(standingBlock));
-                standingBlock = stepDown(stepDownHeight.height, standingBlock);
+                downwardScaffold(player, stepDownHeight, copyBlock(standingBlock));
+                standingBlock = stepDown(player, stepDownHeight.height, standingBlock);
                 continue;
             }
-            standingBlock = step(standingBlock, 1);
+            standingBlock = step(player, standingBlock, 1);
         }
     }
 }
