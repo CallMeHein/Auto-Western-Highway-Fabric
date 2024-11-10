@@ -12,6 +12,7 @@ import static hein.auto_western_highway.AutoHighwaySchematic.*;
 import static hein.auto_western_highway.Baritone.build;
 import static hein.auto_western_highway.Baritone.resetSettings;
 import static hein.auto_western_highway.Blocks.*;
+import static hein.auto_western_highway.Globals.globalHudRenderer;
 import static net.minecraft.util.math.Direction.Axis.X;
 import static net.minecraft.util.math.Direction.Axis.Y;
 
@@ -54,6 +55,7 @@ public class Down {
     public static BlockPos stepDown(int count, BlockPos buildOrigin) {
         buildOrigin = buildOrigin.offset(Y, 1);
         for (int i = 0; i < count; i++) {
+            globalHudRenderer.message = String.format("Stepping down %d step%s", count - i, count - i > 1 ? "s" : "");
             build(STEP_DOWN, copyBlock(buildOrigin, -1, -1, -1));
             build(STEP, copyBlock(buildOrigin, -2, -2, -1));
             buildOrigin = offsetBlock(buildOrigin, -2, -1, 0);
@@ -66,6 +68,7 @@ public class Down {
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepDownHeight.containsScaffoldBlockingBlocks;
         for (int i = 0; i < stepDownHeight.height; i++) {
+            globalHudRenderer.message = String.format("Scaffolding down %d step%s", stepDownHeight.height - i, stepDownHeight.height - i > 1 ? "s" : "");
             build(STEP_SCAFFOLD, copyBlock(buildOrigin, -2 * stepDownHeight.height, -stepDownHeight.height, 0));
             buildOrigin = offsetBlock(buildOrigin, 2, 1, 0);
         }

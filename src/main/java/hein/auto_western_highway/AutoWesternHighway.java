@@ -5,12 +5,14 @@ import hein.auto_western_highway.types.StepHeight;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 
 import static hein.auto_western_highway.Baritone.resetSettings;
 import static hein.auto_western_highway.Blocks.copyBlock;
 import static hein.auto_western_highway.Down.*;
+import static hein.auto_western_highway.Globals.globalHudRenderer;
 import static hein.auto_western_highway.Globals.globalPlayer;
 import static hein.auto_western_highway.Step.step;
 import static hein.auto_western_highway.Up.*;
@@ -21,20 +23,28 @@ import static hein.auto_western_highway.Utils.sendStatusMessage;
 public class AutoWesternHighway implements ModInitializer {
     private static boolean running = false;
     private static Thread runningThread;
+    private static boolean displayStatus = true;
 
     @Override
     public void onInitialize() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        globalPlayer = client.player;
-        assert globalPlayer != null;
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(
                     ClientCommandManager.literal("autoWesternHighway")
                             .executes(context -> {
+                                setGlobals();
                                 autoWesternHighway();
                                 return 1;
                             })
             );
+
+            dispatcher.register(ClientCommandManager.literal("toggleStatusDisplay").executes(context -> {
+                if (running) {
+                    displayStatus = !displayStatus;
+                    sendStatusMessage("Showing AutoWesternHighway status: " + displayStatus);
+                    return 1;
+                }
+                return 0;
+            }));
 
             dispatcher.register(
                     ClientCommandManager.literal("stopAutoWesternHighway")
@@ -43,6 +53,8 @@ public class AutoWesternHighway implements ModInitializer {
                                     runningThread.interrupt();
                                     BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
                                     sendStatusMessage("Stopping autoWesternHighway...");
+                                    running = false;
+                                    unsetGlobals();
                                     return 1;
                                 }
                                 sendStatusMessage("autoWesternHighway is not running");
@@ -50,6 +62,22 @@ public class AutoWesternHighway implements ModInitializer {
                             })
             );
         });
+    }
+
+    private void setGlobals() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        globalPlayer = client.player;
+        globalHudRenderer = new HudRender();
+        HudRenderCallback.EVENT.register((drawContext, delta) -> {
+            if (running && displayStatus) {
+                globalHudRenderer.render(drawContext);
+            }
+        });
+    }
+
+    private void unsetGlobals() {
+        globalPlayer = null;
+        globalHudRenderer = null;
     }
 
     private void autoWesternHighway() {
@@ -60,9 +88,8 @@ public class AutoWesternHighway implements ModInitializer {
         // start the script in a separate thread - this prevents blocking the mod and allows execution of other commands like /stopAutoWesternHighway
         runningThread = new Thread(() -> {
             resetSettings();
+            running = true;
             mainLoop();
-            running = false;
-            sendStatusMessage("Stopped autoWesternHighway");
         });
         runningThread.start();
     }

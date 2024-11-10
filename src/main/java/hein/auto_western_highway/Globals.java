@@ -4,4 +4,5 @@ import net.minecraft.client.network.ClientPlayerEntity;
 
 public class Globals {
     public static ClientPlayerEntity globalPlayer;
+    public static HudRender globalHudRenderer;
 }
