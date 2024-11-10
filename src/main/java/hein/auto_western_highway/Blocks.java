@@ -2,7 +2,6 @@ package hein.auto_western_highway;
 
 import hein.auto_western_highway.types.BlocknameAndState;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 
@@ -10,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static hein.auto_western_highway.Globals.globalPlayer;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Blocks {
@@ -30,17 +30,17 @@ public class Blocks {
                 block.contains("_grass");
     }
 
-    public static List<String> getBlocksNameFromBlockPositions(ClientPlayerEntity player, List<BlockPos> blockPositions) {
+    public static List<String> getBlocksNameFromBlockPositions(List<BlockPos> blockPositions) {
         return blockPositions.stream().map(block ->
-                Registries.BLOCK.getId(player.clientWorld.getBlockState(block).getBlock())
+                Registries.BLOCK.getId(globalPlayer.clientWorld.getBlockState(block).getBlock())
                         .toString().substring(10) // remove the "minecraft:" prefix
         ).toList();
     }
 
-    public static List<BlocknameAndState> getBlocknamesAndStatesFromBlockPositions(ClientPlayerEntity player, List<BlockPos> blockPositions) {
+    public static List<BlocknameAndState> getBlocknamesAndStatesFromBlockPositions(List<BlockPos> blockPositions) {
         List<BlocknameAndState> blocknamesAndStates = new ArrayList<>();
         blockPositions.forEach(blockPos -> {
-            BlockState state = player.clientWorld.getBlockState(blockPos);
+            BlockState state = globalPlayer.clientWorld.getBlockState(blockPos);
             blocknamesAndStates.add(new BlocknameAndState(Registries.BLOCK.getId(state.getBlock()).toString().substring(10), state));
         });
         return blocknamesAndStates;

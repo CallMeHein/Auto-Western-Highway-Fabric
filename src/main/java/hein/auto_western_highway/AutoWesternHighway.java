@@ -6,12 +6,12 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 import static hein.auto_western_highway.Baritone.resetSettings;
 import static hein.auto_western_highway.Blocks.copyBlock;
 import static hein.auto_western_highway.Down.*;
+import static hein.auto_western_highway.Globals.globalPlayer;
 import static hein.auto_western_highway.Step.step;
 import static hein.auto_western_highway.Up.*;
 import static hein.auto_western_highway.Utils.getStandingBlock;
@@ -24,6 +24,9 @@ public class AutoWesternHighway implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        globalPlayer = client.player;
+        assert globalPlayer != null;
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(
                     ClientCommandManager.literal("autoWesternHighway")
@@ -32,19 +35,17 @@ public class AutoWesternHighway implements ModInitializer {
                                 return 1;
                             })
             );
+
             dispatcher.register(
                     ClientCommandManager.literal("stopAutoWesternHighway")
                             .executes(context -> {
-                                MinecraftClient client = MinecraftClient.getInstance();
-                                ClientPlayerEntity player = client.player;
-                                assert player != null;
                                 if (runningThread != null) {
                                     runningThread.interrupt();
                                     BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
-                                    sendStatusMessage(player, "Stopping autoWesternHighway...");
+                                    sendStatusMessage("Stopping autoWesternHighway...");
                                     return 1;
                                 }
-                                sendStatusMessage(player, "autoWesternHighway is not running");
+                                sendStatusMessage("autoWesternHighway is not running");
                                 return 0;
                             })
             );
@@ -52,51 +53,48 @@ public class AutoWesternHighway implements ModInitializer {
     }
 
     private void autoWesternHighway() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        ClientPlayerEntity player = client.player;
-        assert player != null;
         if (running) {
-            sendStatusMessage(player, "Script is already running, stop it with /stopAutoWesternHighway");
+            sendStatusMessage("Script is already running, stop it with /stopAutoWesternHighway");
             return;
         }
         // start the script in a separate thread - this prevents blocking the mod and allows execution of other commands like /stopAutoWesternHighway
         runningThread = new Thread(() -> {
             resetSettings();
-            mainLoop(player);
+            mainLoop();
             running = false;
-            sendStatusMessage(player, "Stopped autoWesternHighway");
+            sendStatusMessage("Stopped autoWesternHighway");
         });
         runningThread.start();
     }
 
-    private void mainLoop(ClientPlayerEntity player) {
-        BlockPos standingBlock = getStandingBlock(player);
+    private void mainLoop() {
+        BlockPos standingBlock = getStandingBlock();
         standingBlock = new BlockPos(standingBlock.getX(), standingBlock.getY(), 0);
         while (true) {
-            StepHeight stepUpHeight = getStepUpHeight(player, standingBlock);
+            StepHeight stepUpHeight = getStepUpHeight(standingBlock);
             if (stepUpHeight.height > 0) {
-                int futureStepDownLength = getFutureStepDownLength(player, standingBlock, stepUpHeight.height);
+                int futureStepDownLength = getFutureStepDownLength(standingBlock, stepUpHeight.height);
                 if (futureStepDownLength > 0) {
-                    standingBlock = step(player, standingBlock, futureStepDownLength);
+                    standingBlock = step(standingBlock, futureStepDownLength);
                     continue;
                 }
-                upwardScaffold(player, stepUpHeight, copyBlock(standingBlock));
-                standingBlock = stepUp(player, stepUpHeight.height, standingBlock);
+                upwardScaffold(stepUpHeight, copyBlock(standingBlock));
+                standingBlock = stepUp(stepUpHeight.height, standingBlock);
                 continue;
             }
 
-            StepHeight stepDownHeight = getStepDownHeight(player, standingBlock);
+            StepHeight stepDownHeight = getStepDownHeight(standingBlock);
             if (stepDownHeight.height > 0) {
-                int futureStepUpLength = getFutureStepUpLength(player, standingBlock, stepUpHeight.height);
+                int futureStepUpLength = getFutureStepUpLength(standingBlock, stepUpHeight.height);
                 if (futureStepUpLength > 0) {
-                    standingBlock = step(player, standingBlock, futureStepUpLength);
+                    standingBlock = step(standingBlock, futureStepUpLength);
                     continue;
                 }
-                downwardScaffold(player, stepDownHeight, copyBlock(standingBlock));
-                standingBlock = stepDown(player, stepDownHeight.height, standingBlock);
+                downwardScaffold(stepDownHeight, copyBlock(standingBlock));
+                standingBlock = stepDown(stepDownHeight.height, standingBlock);
                 continue;
             }
-            standingBlock = step(player, standingBlock, 1);
+            standingBlock = step(standingBlock, 1);
         }
     }
 }

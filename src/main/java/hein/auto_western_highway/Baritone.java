@@ -3,7 +3,6 @@ package hein.auto_western_highway;
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import baritone.api.process.IBuilderProcess;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
@@ -36,7 +35,7 @@ public class Baritone {
         settings.buildIgnoreBlocks.value = buildIgnoreBlocks;
     }
 
-    public static void build(ClientPlayerEntity player, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
+    public static void build(AutoHighwaySchematic schematic, BlockPos buildOrigin) {
         File file = new File(new File(BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().minecraft().runDirectory, "schematics"), schematic.getFileName() + ".litematic").getAbsoluteFile();
         if (FilenameUtils.getExtension(file.getAbsolutePath()).isEmpty()) {
             file = new File(file.getAbsolutePath() + "." + BaritoneAPI.getSettings().schematicFallbackExtension.value);
@@ -46,13 +45,13 @@ public class Baritone {
         }
         IBuilderProcess builderProcess = BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess();
         builderProcess.build(file.getName(), file, buildOrigin);
-        waitUntilDone(player, builderProcess, schematic, buildOrigin);
+        waitUntilDone(builderProcess, schematic, buildOrigin);
     }
 
-    private static void waitUntilDone(ClientPlayerEntity player, IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
+    private static void waitUntilDone(IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
         while (builderProcess.isActive()) {
             if (builderProcess.isPaused()) {
-                resumeIfPausedForFlowingLiquid(player, builderProcess, schematic, buildOrigin);
+                resumeIfPausedForFlowingLiquid(builderProcess, schematic, buildOrigin);
             }
             sleep(250);
         }
@@ -83,9 +82,9 @@ public class Baritone {
         return blocks;
     }
 
-    private static void resumeIfPausedForFlowingLiquid(ClientPlayerEntity player, IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
+    private static void resumeIfPausedForFlowingLiquid(IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
         List<BlockPos> blocks = getSchematicBlockPositions(schematic, buildOrigin);
-        boolean containsFlowingWater = Blocks.getBlocknamesAndStatesFromBlockPositions(player, blocks).stream().anyMatch(b -> b.state().contains(Properties.LEVEL_15) && b.state().get(Properties.LEVEL_15) != 0);
+        boolean containsFlowingWater = Blocks.getBlocknamesAndStatesFromBlockPositions(blocks).stream().anyMatch(b -> b.state().contains(Properties.LEVEL_15) && b.state().get(Properties.LEVEL_15) != 0);
         if (containsFlowingWater) {
             builderProcess.resume();
         }
