@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static hein.auto_western_highway.Constants.buildIgnoreBlocks;
-import static hein.auto_western_highway.Utils.sleep;
+import static hein.auto_western_highway.Utils.waitUntilTrue;
 import static net.minecraft.block.Blocks.*;
 
 public class Baritone {
@@ -45,15 +45,19 @@ public class Baritone {
         }
         IBuilderProcess builderProcess = BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess();
         builderProcess.build(file.getName(), file, buildOrigin);
-        waitUntilDone(builderProcess, schematic, buildOrigin);
-    }
-
-    private static void waitUntilDone(IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
-        while (builderProcess.isActive()) {
+        waitUntilTrue(() -> {
             if (builderProcess.isPaused()) {
                 resumeIfPausedForFlowingLiquid(builderProcess, schematic, buildOrigin);
             }
-            sleep(250);
+            return !builderProcess.isActive();
+        });
+    }
+
+    private static void resumeIfPausedForFlowingLiquid(IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
+        List<BlockPos> blocks = getSchematicBlockPositions(schematic, buildOrigin);
+        boolean containsFlowingWater = Blocks.getBlocknamesAndStatesFromBlockPositions(blocks).stream().anyMatch(b -> b.state().contains(Properties.LEVEL_15) && b.state().get(Properties.LEVEL_15) != 0);
+        if (containsFlowingWater) {
+            builderProcess.resume();
         }
     }
 
@@ -77,16 +81,10 @@ public class Baritone {
                     blocks.add(new BlockPos(buildOrigin.getX() + x, buildOrigin.getY(), 0));
                 }
             }
-            default -> throw new IllegalStateException("Unknown AutoHighwaySchematic: " + schematic);
+            default -> throw new IllegalStateException("Unknown AutoHighwaySchematic in pathing: " + schematic);
         }
         return blocks;
     }
 
-    private static void resumeIfPausedForFlowingLiquid(IBuilderProcess builderProcess, AutoHighwaySchematic schematic, BlockPos buildOrigin) {
-        List<BlockPos> blocks = getSchematicBlockPositions(schematic, buildOrigin);
-        boolean containsFlowingWater = Blocks.getBlocknamesAndStatesFromBlockPositions(blocks).stream().anyMatch(b -> b.state().contains(Properties.LEVEL_15) && b.state().get(Properties.LEVEL_15) != 0);
-        if (containsFlowingWater) {
-            builderProcess.resume();
-        }
-    }
+
 }

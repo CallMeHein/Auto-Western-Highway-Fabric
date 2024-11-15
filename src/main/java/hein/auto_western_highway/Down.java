@@ -13,6 +13,8 @@ import static hein.auto_western_highway.Baritone.build;
 import static hein.auto_western_highway.Baritone.resetSettings;
 import static hein.auto_western_highway.Blocks.*;
 import static hein.auto_western_highway.Globals.globalHudRenderer;
+import static hein.auto_western_highway.InventoryManagement.replenishItemsIfNeeded;
+import static hein.auto_western_highway.InventoryManagement.setHotbarToInventoryLoadout;
 import static net.minecraft.util.math.Direction.Axis.X;
 import static net.minecraft.util.math.Direction.Axis.Y;
 
@@ -22,14 +24,13 @@ public class Down {
         StepHeight stepHeight = new StepHeight();
         stepHeight.containsScaffoldBlockingBlocks = rayDownBlocks.stream().anyMatch(Blocks::isScaffoldBlockingBlock);
         stepHeight.height = 0;
-        for (int step = 0; step < Constants.MAX_RAY_STEPS; step++) //noinspection GrazieInspection
-        {
+        for (int step = 0; step < Constants.MAX_RAY_STEPS; step++) {
             List<String> blocks = List.of(
                     rayDownBlocks.get(step * 3),
                     rayDownBlocks.get(step * 3 + 1),
                     rayDownBlocks.get(step * 3 + 2)
             );
-            // ignore the block we are standing on on the 0-th step
+            // on the 0-th step, ignore the block we are standing on
             if (step == 0 && isNonTerrainBlock(blocks.get(1)) && isNonTerrainBlock(blocks.get(2))) {
                 stepHeight.height += 1;
             } else if (blocks.stream().allMatch(Blocks::isNonTerrainBlock)) {
@@ -55,6 +56,8 @@ public class Down {
     public static BlockPos stepDown(int count, BlockPos buildOrigin) {
         buildOrigin = buildOrigin.offset(Y, 1);
         for (int i = 0; i < count; i++) {
+            replenishItemsIfNeeded();
+            setHotbarToInventoryLoadout();
             globalHudRenderer.message = String.format("Stepping down %d step%s", count - i, count - i > 1 ? "s" : "");
             build(STEP_DOWN, copyBlock(buildOrigin, -1, -1, -1));
             build(STEP, copyBlock(buildOrigin, -2, -2, -1));
@@ -68,6 +71,8 @@ public class Down {
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepDownHeight.containsScaffoldBlockingBlocks;
         for (int i = 0; i < stepDownHeight.height; i++) {
+            replenishItemsIfNeeded();
+            setHotbarToInventoryLoadout();
             globalHudRenderer.message = String.format("Scaffolding down %d step%s", stepDownHeight.height - i, stepDownHeight.height - i > 1 ? "s" : "");
             build(STEP_SCAFFOLD, copyBlock(buildOrigin, -2 * stepDownHeight.height, -stepDownHeight.height, 0));
             buildOrigin = offsetBlock(buildOrigin, 2, 1, 0);

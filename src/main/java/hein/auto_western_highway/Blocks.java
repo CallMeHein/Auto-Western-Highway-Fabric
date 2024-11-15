@@ -1,7 +1,10 @@
 package hein.auto_western_highway;
 
 import hein.auto_western_highway.types.BlocknameAndState;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 
@@ -13,6 +16,19 @@ import static hein.auto_western_highway.Globals.globalPlayer;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Blocks {
+    public static String getBlockId(BlockItem item) {
+        return Registries.BLOCK.getId(item.getBlock()).getPath();
+    }
+
+    public static String getBlockId(Block block) {
+        return Registries.BLOCK.getId(block).getPath();
+    }
+
+    public static String getBlockId(Item item) {
+        assert item instanceof BlockItem;
+        return getBlockId((BlockItem) item);
+    }
+
     public static BlockPos copyBlock(BlockPos block) {
         return new BlockPos(block.getX(), block.getY(), block.getZ());
     }
@@ -31,17 +47,14 @@ public class Blocks {
     }
 
     public static List<String> getBlocksNameFromBlockPositions(List<BlockPos> blockPositions) {
-        return blockPositions.stream().map(block ->
-                Registries.BLOCK.getId(globalPlayer.clientWorld.getBlockState(block).getBlock())
-                        .toString().substring(10) // remove the "minecraft:" prefix
-        ).toList();
+        return blockPositions.stream().map(block -> getBlockId(globalPlayer.clientWorld.getBlockState(block).getBlock())).toList();
     }
 
     public static List<BlocknameAndState> getBlocknamesAndStatesFromBlockPositions(List<BlockPos> blockPositions) {
         List<BlocknameAndState> blocknamesAndStates = new ArrayList<>();
         blockPositions.forEach(blockPos -> {
             BlockState state = globalPlayer.clientWorld.getBlockState(blockPos);
-            blocknamesAndStates.add(new BlocknameAndState(Registries.BLOCK.getId(state.getBlock()).toString().substring(10), state));
+            blocknamesAndStates.add(new BlocknameAndState(getBlockId(state.getBlock()), state));
         });
         return blocknamesAndStates;
     }

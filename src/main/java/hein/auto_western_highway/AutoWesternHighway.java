@@ -12,8 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import static hein.auto_western_highway.Baritone.resetSettings;
 import static hein.auto_western_highway.Blocks.copyBlock;
 import static hein.auto_western_highway.Down.*;
-import static hein.auto_western_highway.Globals.globalHudRenderer;
-import static hein.auto_western_highway.Globals.globalPlayer;
+import static hein.auto_western_highway.Globals.*;
 import static hein.auto_western_highway.Step.step;
 import static hein.auto_western_highway.Up.*;
 import static hein.auto_western_highway.Utils.getStandingBlock;
@@ -25,48 +24,20 @@ public class AutoWesternHighway implements ModInitializer {
     private static Thread runningThread;
     private static boolean displayStatus = true;
 
-    @Override
-    public void onInitialize() {
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            dispatcher.register(
-                    ClientCommandManager.literal("autoWesternHighway")
-                            .executes(context -> {
-                                setGlobals();
-                                autoWesternHighway();
-                                return 1;
-                            })
-            );
-
-            dispatcher.register(ClientCommandManager.literal("toggleStatusDisplay").executes(context -> {
-                if (running) {
-                    displayStatus = !displayStatus;
-                    sendStatusMessage("Showing AutoWesternHighway status: " + displayStatus);
-                    return 1;
-                }
-                return 0;
-            }));
-
-            dispatcher.register(
-                    ClientCommandManager.literal("stopAutoWesternHighway")
-                            .executes(context -> {
-                                if (runningThread != null) {
-                                    runningThread.interrupt();
-                                    BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
-                                    sendStatusMessage("Stopping autoWesternHighway...");
-                                    running = false;
-                                    unsetGlobals();
-                                    return 1;
-                                }
-                                sendStatusMessage("autoWesternHighway is not running");
-                                return 0;
-                            })
-            );
-        });
+    public static int stopAutoWesternHighway() {
+        if (runningThread != null) {
+            runningThread.interrupt();
+            BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
+            sendStatusMessage("Stopping autoWesternHighway...");
+            running = false;
+            return 1;
+        }
+        return 0;
     }
 
-    private void setGlobals() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        globalPlayer = client.player;
+    private static void setGlobals() {
+        globalClient = MinecraftClient.getInstance();
+        globalPlayer = globalClient.player;
         globalHudRenderer = new HudRender();
         HudRenderCallback.EVENT.register((drawContext, delta) -> {
             if (running && displayStatus) {
@@ -75,17 +46,12 @@ public class AutoWesternHighway implements ModInitializer {
         });
     }
 
-    private void unsetGlobals() {
-        globalPlayer = null;
-        globalHudRenderer = null;
-    }
-
-    private void autoWesternHighway() {
+    private static void autoWesternHighway() {
         if (running) {
             sendStatusMessage("Script is already running, stop it with /stopAutoWesternHighway");
             return;
         }
-        // start the script in a separate thread - this prevents blocking the mod and allows execution of other commands like /stopAutoWesternHighway
+        // start the script in a separate thread - this prevents freezing the game whenever we sleep the thread
         runningThread = new Thread(() -> {
             resetSettings();
             running = true;
@@ -94,10 +60,11 @@ public class AutoWesternHighway implements ModInitializer {
         runningThread.start();
     }
 
-    private void mainLoop() {
+    private static void mainLoop() {
         BlockPos standingBlock = getStandingBlock();
         standingBlock = new BlockPos(standingBlock.getX(), standingBlock.getY(), 0);
         while (true) {
+            // check if/how much we should step up
             StepHeight stepUpHeight = getStepUpHeight(standingBlock);
             if (stepUpHeight.height > 0) {
                 int futureStepDownLength = getFutureStepDownLength(standingBlock, stepUpHeight.height);
@@ -109,7 +76,7 @@ public class AutoWesternHighway implements ModInitializer {
                 standingBlock = stepUp(stepUpHeight.height, standingBlock);
                 continue;
             }
-
+            // check if/how much we should step down
             StepHeight stepDownHeight = getStepDownHeight(standingBlock);
             if (stepDownHeight.height > 0) {
                 int futureStepUpLength = getFutureStepUpLength(standingBlock, stepUpHeight.height);
@@ -121,7 +88,32 @@ public class AutoWesternHighway implements ModInitializer {
                 standingBlock = stepDown(stepDownHeight.height, standingBlock);
                 continue;
             }
+            // just step forward if neither
             standingBlock = step(standingBlock, 1);
         }
+    }
+
+    @Override
+    public void onInitialize() {
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            dispatcher.register(ClientCommandManager.literal("autoWesternHighway").executes(context -> {
+                setGlobals();
+                autoWesternHighway();
+                return 1;
+            }));
+
+            dispatcher.register(ClientCommandManager.literal("toggleStatusDisplay").executes(context -> {
+                if (running) {
+                    displayStatus = !displayStatus;
+                    sendStatusMessage("Showing AutoWesternHighway status: " + displayStatus);
+                    return 1;
+                }
+                return 0;
+            }));
+
+            dispatcher.register(ClientCommandManager.literal("stopAutoWesternHighway").executes(context ->
+                    stopAutoWesternHighway())
+            );
+        });
     }
 }

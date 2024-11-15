@@ -12,6 +12,8 @@ import static hein.auto_western_highway.Baritone.build;
 import static hein.auto_western_highway.Baritone.resetSettings;
 import static hein.auto_western_highway.Blocks.*;
 import static hein.auto_western_highway.Globals.globalHudRenderer;
+import static hein.auto_western_highway.InventoryManagement.replenishItemsIfNeeded;
+import static hein.auto_western_highway.InventoryManagement.setHotbarToInventoryLoadout;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Up {
@@ -54,6 +56,8 @@ public class Up {
     public static BlockPos stepUp(int count, BlockPos buildOrigin) {
         buildOrigin = buildOrigin.offset(Y, 1);
         for (int i = 0; i < count; i++) {
+            replenishItemsIfNeeded();
+            setHotbarToInventoryLoadout();
             globalHudRenderer.message = String.format("Stepping up %d step%s", count - i, count - i > 1 ? "s" : "");
             build(AutoHighwaySchematic.STEP_UP, copyBlock(buildOrigin).offset(X, -2).offset(Z, -1));
             buildOrigin = buildOrigin.offset(X, -2).offset(Y, 1);
@@ -66,6 +70,8 @@ public class Up {
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepUpHeight.containsScaffoldBlockingBlocks;
         for (int i = 0; i < stepUpHeight.height; i++) {
+            replenishItemsIfNeeded();
+            setHotbarToInventoryLoadout();
             globalHudRenderer.message = String.format("Scaffolding up %d step%s", stepUpHeight.height - i, stepUpHeight.height - i > 1 ? "s" : "");
             build(AutoHighwaySchematic.STEP_SCAFFOLD, copyBlock(buildOrigin).offset(X, -3).offset(Y, 1));
             buildOrigin = offsetBlock(buildOrigin, -2, 1, 0);

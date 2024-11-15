@@ -4,7 +4,8 @@ public enum AutoHighwaySchematic {
     STEP("step"),
     STEP_UP("step_up"),
     STEP_DOWN("step_down"),
-    STEP_SCAFFOLD("step_scaffold");
+    STEP_SCAFFOLD("step_scaffold"),
+    CLEAR_PLAYER_SPACE("clear_player_space");
 
     private final String fileName;
 
