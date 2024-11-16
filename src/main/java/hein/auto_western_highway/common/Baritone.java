@@ -1,4 +1,4 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
@@ -12,8 +12,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static hein.auto_western_highway.Constants.buildIgnoreBlocks;
-import static hein.auto_western_highway.Utils.waitUntilTrue;
+import static hein.auto_western_highway.common.Constants.buildIgnoreBlocks;
+import static hein.auto_western_highway.common.Utils.waitUntilTrue;
 import static net.minecraft.block.Blocks.*;
 
 public class Baritone {
@@ -36,7 +36,7 @@ public class Baritone {
     }
 
     public static void build(AutoHighwaySchematic schematic, BlockPos buildOrigin) {
-        File file = new File(new File(BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().minecraft().runDirectory, "schematics"), schematic.getFileName() + ".litematic").getAbsoluteFile();
+        File file = new File(new File(BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().minecraft().runDirectory, "schematics"), schematic.getFileName() + ".schem").getAbsoluteFile();
         if (FilenameUtils.getExtension(file.getAbsolutePath()).isEmpty()) {
             file = new File(file.getAbsolutePath() + "." + BaritoneAPI.getSettings().schematicFallbackExtension.value);
         }

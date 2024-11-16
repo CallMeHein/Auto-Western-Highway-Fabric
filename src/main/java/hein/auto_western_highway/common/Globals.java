@@ -1,4 +1,4 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;

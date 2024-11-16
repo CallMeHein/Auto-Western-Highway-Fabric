@@ -1,7 +1,7 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 import baritone.api.BaritoneAPI;
-import hein.auto_western_highway.types.ResourceLoadout;
+import hein.auto_western_highway.common.types.ResourceLoadout;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
@@ -9,7 +9,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
@@ -28,15 +27,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static hein.auto_western_highway.AutoHighwaySchematic.CLEAR_PLAYER_SPACE;
-import static hein.auto_western_highway.AutoWesternHighway.stopAutoWesternHighway;
-import static hein.auto_western_highway.Baritone.build;
-import static hein.auto_western_highway.Baritone.resetSettings;
-import static hein.auto_western_highway.Blocks.*;
-import static hein.auto_western_highway.Globals.globalClient;
-import static hein.auto_western_highway.Globals.globalPlayer;
-import static hein.auto_western_highway.Utils.*;
-import static hein.auto_western_highway.types.InventoryLoadout.*;
+import static hein.auto_western_highway.common.AutoHighwaySchematic.CLEAR_PLAYER_SPACE;
+import static hein.auto_western_highway.common.AutoWesternHighway.stopAutoWesternHighway;
+import static hein.auto_western_highway.common.Baritone.build;
+import static hein.auto_western_highway.common.Baritone.resetSettings;
+import static hein.auto_western_highway.common.Blocks.*;
+import static hein.auto_western_highway.common.Globals.globalClient;
+import static hein.auto_western_highway.common.Globals.globalPlayer;
+import static hein.auto_western_highway.common.InvokeVersionSpecific.invokeVersionSpecific;
+import static hein.auto_western_highway.common.Utils.*;
+import static hein.auto_western_highway.common.types.InventoryLoadout.*;
 import static net.minecraft.screen.slot.SlotActionType.*;
 import static net.minecraft.util.Hand.MAIN_HAND;
 
@@ -129,7 +129,7 @@ public class InventoryManagement {
     private static void extractItems() {
         waitUntilTrue(() -> globalPlayer.currentScreenHandler instanceof ShulkerBoxScreenHandler);
         ScreenHandler screen = globalPlayer.currentScreenHandler;
-        Inventory shulkerInventory = screen.slots.stream().filter(slot -> slot instanceof ShulkerBoxSlot).findFirst().get().inventory;
+        Inventory shulkerInventory = screen.slots.stream().filter(slot -> slot instanceof ShulkerBoxSlot).findFirst().orElseThrow().inventory;
         for (int shulkerSlotId = 0; shulkerSlotId < shulkerInventory.size(); shulkerSlotId++) {
             ItemStack item = shulkerInventory.getStack(shulkerSlotId);
             if (!(item.getItem() instanceof BlockItem)) {
@@ -180,7 +180,7 @@ public class InventoryManagement {
 
     private static void breakBlock(BlockPos position, String blockId) {
         assert globalClient.interactionManager != null;
-        while (getBlocksNameFromBlockPositions(List.of(position)).stream().findFirst().get().equals(blockId)) {
+        while (getBlocksNameFromBlockPositions(List.of(position)).stream().findFirst().orElseThrow().equals(blockId)) {
             CountDownLatch latch = new CountDownLatch(1);
             globalClient.execute(() -> {
                 globalClient.interactionManager.attackBlock(position, Direction.UP);
@@ -198,19 +198,15 @@ public class InventoryManagement {
     }
 
     private static int getRelevantItemCount(ItemStack shulker) {
-        if (shulker.getNbt() == null) {
-            return 0;
-        }
-        NbtList shulkerItems = shulker.getNbt().getCompound("BlockEntityTag").getList("Items", 10); // type 10 == NbtCompound
+        List<String> shulkerItems = invokeVersionSpecific("GetItemIdsInShulker", "getItemIdsInShulker",shulker);
         List<String> foundRelevantItems = new ArrayList<>();
-        for (int i = 0; i < shulkerItems.size(); i++) {
-            String itemName = shulkerItems.getCompound(i).getString("id").substring(10);
+        shulkerItems.forEach(itemId -> {
             for (ResourceLoadout resource : getLowMaterials()) {
-                if (resource.block.equals(itemName) && !foundRelevantItems.contains(resource.block)) {
+                if (resource.block.equals(itemId) && !foundRelevantItems.contains(resource.block)) {
                     foundRelevantItems.add(resource.block);
                 }
             }
-        }
+        });
         return foundRelevantItems.size();
     }
 

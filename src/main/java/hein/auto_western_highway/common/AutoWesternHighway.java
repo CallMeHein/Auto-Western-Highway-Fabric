@@ -1,7 +1,7 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 import baritone.api.BaritoneAPI;
-import hein.auto_western_highway.types.StepHeight;
+import hein.auto_western_highway.common.types.StepHeight;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -9,14 +9,14 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 
-import static hein.auto_western_highway.Baritone.resetSettings;
-import static hein.auto_western_highway.Blocks.copyBlock;
-import static hein.auto_western_highway.Down.*;
-import static hein.auto_western_highway.Globals.*;
-import static hein.auto_western_highway.Step.step;
-import static hein.auto_western_highway.Up.*;
-import static hein.auto_western_highway.Utils.getStandingBlock;
-import static hein.auto_western_highway.Utils.sendStatusMessage;
+import static hein.auto_western_highway.common.Baritone.resetSettings;
+import static hein.auto_western_highway.common.Blocks.copyBlock;
+import static hein.auto_western_highway.common.Down.*;
+import static hein.auto_western_highway.common.Globals.*;
+import static hein.auto_western_highway.common.Step.step;
+import static hein.auto_western_highway.common.Up.*;
+import static hein.auto_western_highway.common.Utils.getStandingBlock;
+import static hein.auto_western_highway.common.Utils.sendStatusMessage;
 
 
 public class AutoWesternHighway implements ModInitializer {

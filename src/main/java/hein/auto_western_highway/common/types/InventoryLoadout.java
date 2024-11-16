@@ -1,4 +1,4 @@
-package hein.auto_western_highway.types;
+package hein.auto_western_highway.common.types;
 
 import java.util.List;
 

@@ -1,19 +1,19 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
-import hein.auto_western_highway.types.StepHeight;
+import hein.auto_western_highway.common.types.StepHeight;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static hein.auto_western_highway.Baritone.build;
-import static hein.auto_western_highway.Baritone.resetSettings;
-import static hein.auto_western_highway.Blocks.*;
-import static hein.auto_western_highway.Globals.globalHudRenderer;
-import static hein.auto_western_highway.InventoryManagement.replenishItemsIfNeeded;
-import static hein.auto_western_highway.InventoryManagement.setHotbarToInventoryLoadout;
+import static hein.auto_western_highway.common.Baritone.build;
+import static hein.auto_western_highway.common.Baritone.resetSettings;
+import static hein.auto_western_highway.common.Blocks.*;
+import static hein.auto_western_highway.common.Globals.globalHudRenderer;
+import static hein.auto_western_highway.common.InventoryManagement.replenishItemsIfNeeded;
+import static hein.auto_western_highway.common.InventoryManagement.setHotbarToInventoryLoadout;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Up {

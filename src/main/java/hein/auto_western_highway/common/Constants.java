@@ -1,4 +1,4 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 import net.minecraft.block.Block;
 
@@ -17,6 +17,10 @@ public class Constants {
             AZALEA_LEAVES,
             AZURE_BLUET,
             BIRCH_LEAVES,
+            MANGROVE_ROOTS,
+            MUDDY_MANGROVE_ROOTS,
+            MANGROVE_LOG,
+            MANGROVE_LEAVES,
             BLUE_ORCHID,
             BROWN_MUSHROOM,
             CACTUS,

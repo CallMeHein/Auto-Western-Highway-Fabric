@@ -1,4 +1,4 @@
-package hein.auto_western_highway.types;
+package hein.auto_western_highway.common.types;
 
 public class ResourceLoadout {
     public final String block;

@@ -1,6 +1,6 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
-import hein.auto_western_highway.types.BlocknameAndState;
+import BlocknameAndState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static hein.auto_western_highway.Globals.globalPlayer;
+import static hein.auto_western_highway.common.Globals.globalPlayer;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Blocks {

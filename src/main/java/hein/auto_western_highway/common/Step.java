@@ -1,11 +1,11 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 import net.minecraft.util.math.BlockPos;
 
-import static hein.auto_western_highway.AutoHighwaySchematic.STEP;
-import static hein.auto_western_highway.Globals.globalHudRenderer;
-import static hein.auto_western_highway.InventoryManagement.replenishItemsIfNeeded;
-import static hein.auto_western_highway.InventoryManagement.setHotbarToInventoryLoadout;
+import static hein.auto_western_highway.common.AutoHighwaySchematic.STEP;
+import static hein.auto_western_highway.common.Globals.globalHudRenderer;
+import static hein.auto_western_highway.common.InventoryManagement.replenishItemsIfNeeded;
+import static hein.auto_western_highway.common.InventoryManagement.setHotbarToInventoryLoadout;
 import static net.minecraft.util.math.Direction.Axis.X;
 import static net.minecraft.util.math.Direction.Axis.Z;
 

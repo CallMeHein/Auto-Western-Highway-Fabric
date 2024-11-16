@@ -16,7 +16,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "hein.auto_western_highway.AutoWesternHighway"
+      "hein.auto_western_highway.common.AutoWesternHighway"
     ]
   },
   "depends": {
@@ -26,8 +26,7 @@
     ],
     "minecraft": [
       "1.21",
-      "1.20.4",
-      "1.20.3"
+      "1.20.4"
     ],
     "java": ">=17",
     "fabric-api": "*"

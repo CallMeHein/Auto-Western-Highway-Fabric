@@ -1,4 +1,4 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 public enum AutoHighwaySchematic {
     STEP("step"),

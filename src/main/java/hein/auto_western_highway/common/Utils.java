@@ -1,12 +1,12 @@
-package hein.auto_western_highway;
+package hein.auto_western_highway.common;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.function.Supplier;
 
-import static hein.auto_western_highway.Blocks.offsetBlock;
-import static hein.auto_western_highway.Globals.globalPlayer;
+import static hein.auto_western_highway.common.Blocks.offsetBlock;
+import static hein.auto_western_highway.common.Globals.globalPlayer;
 
 public class Utils {
     public static void sendStatusMessage(String message) {
