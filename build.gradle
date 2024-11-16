@@ -87,16 +87,11 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 sourceSets {
-    def versionDir = "src/main/java/hein/auto_western_highway/_${minecraft_version.replace('.', '_')}"
-    def commonDir = 'src/main/java/hein/auto_western_highway/common'
-
     main {
         java {
-            srcDirs = []
-            if (file(versionDir).exists()) {
-                srcDirs += file(versionDir)
-            }
-            srcDirs += file(commonDir)
+            srcDirs = ["src/main/java"]
+            include "hein/auto_western_highway/common/**"
+            include "hein/auto_western_highway/_${minecraft_version.replace('.', '_')}/**"
         }
     }
 }
