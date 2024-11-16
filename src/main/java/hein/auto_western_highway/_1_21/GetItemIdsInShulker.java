@@ -10,6 +10,7 @@ import java.util.List;
 
 import static hein.auto_western_highway.common.Blocks.getBlockId;
 
+@SuppressWarnings("unused")
 public class GetItemIdsInShulker  {
     public static List<String> getItemIdsInShulker(ItemStack shulker){
         ContainerComponent items = (ContainerComponent) shulker.getComponents().get(Registries.DATA_COMPONENT_TYPE.get(Identifier.of("minecraft:container")));

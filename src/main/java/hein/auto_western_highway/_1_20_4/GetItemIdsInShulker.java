@@ -6,6 +6,7 @@ import net.minecraft.nbt.NbtList;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class GetItemIdsInShulker {
     public static List<String> getItemIdsInShulker(ItemStack shulker){
         if (shulker.getNbt() == null) {

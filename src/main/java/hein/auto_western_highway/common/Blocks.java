@@ -1,6 +1,5 @@
 package hein.auto_western_highway.common;
 
-import BlocknameAndState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;

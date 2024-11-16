@@ -61,7 +61,7 @@ public class InventoryManagement {
             if (getRelevantItemCount(shulkers.get(0)) == 0) {
                 return;
             }
-            // if all materials are above the replenish target threshold, we've succesfully replenished
+            // if all materials are above the replenish target threshold, we've successfully replenished
             if (getUnfilledMaterials().isEmpty()) {
                 return;
             }
