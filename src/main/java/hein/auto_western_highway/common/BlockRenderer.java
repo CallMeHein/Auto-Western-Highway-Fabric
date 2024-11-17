@@ -31,7 +31,7 @@ public class BlockRenderer {
                 double z = blockPos.getZ() - cameraPos.z;
 
                 Box box = new Box(x, y, z, x + 1, y + 1, z + 1);
-                WorldRenderer.drawBox(matrices, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1, 1, 1, 1);
+                WorldRenderer.drawBox(matrices, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 0.66f, 0.66f, 0.66f, 1);
             });
         } finally {
             matrices.pop();

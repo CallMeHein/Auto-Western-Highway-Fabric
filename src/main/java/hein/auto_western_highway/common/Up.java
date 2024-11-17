@@ -19,14 +19,15 @@ import static net.minecraft.util.math.Direction.Axis.*;
 public class Up {
     public static StepHeight getStepUpHeight(BlockPos standingBlock) {
         List<String> rayUpBlocks = getBlocksNameFromBlockPositions(getRayUpBlockPositions(standingBlock));
-        StepHeight stepHeight = new StepHeight();
-        stepHeight.containsScaffoldBlockingBlocks = rayUpBlocks.stream().anyMatch(Blocks::isScaffoldBlockingBlock);
+        StepHeight stepHeight = new StepHeight(
+                0,
+                rayUpBlocks.stream().anyMatch(Blocks::isScaffoldBlockingBlock));
         if (rayUpBlocks.stream().allMatch(Blocks::isNonTerrainBlock)) {
-            stepHeight.height = 0;
+            stepHeight.count = 0;
             stepHeight.containsScaffoldBlockingBlocks = false;
             return stepHeight;
         }
-        stepHeight.height = 1;
+        stepHeight.count = 1;
         for (int step = 0; step < Constants.MAX_RAY_STEPS; step++) {
             List<String> blocks = List.of(
                     rayUpBlocks.get(step * 3),
@@ -34,7 +35,7 @@ public class Up {
                     rayUpBlocks.get(step * 3 + 2)
             );
             if (blocks.stream().allMatch(Blocks::isNonTerrainBlock)) {
-                stepHeight.height += 1;
+                stepHeight.count += 1;
             } else {
                 break;
             }
@@ -42,7 +43,7 @@ public class Up {
         return stepHeight;
     }
 
-    private static List<BlockPos> getRayUpBlockPositions(BlockPos standingBlock) {
+    public static List<BlockPos> getRayUpBlockPositions(BlockPos standingBlock) {
         List<BlockPos> blocks = new ArrayList<>(List.of(standingBlock));
         for (int step = 0; step < Constants.MAX_RAY_STEPS; step++) {
             BlockPos stepStartPos = blocks.get(blocks.size() - 1).offset(Y, 1);
@@ -53,26 +54,26 @@ public class Up {
         return blocks.subList(1, blocks.size());
     }
 
-    public static BlockPos stepUp(int count, BlockPos buildOrigin) {
-        buildOrigin = buildOrigin.offset(Y, 1);
+    public static void stepUp(BlockPos buildOrigin, int count) {
+        BlockPos tempBuildOrigin = copyBlock(buildOrigin);
+        tempBuildOrigin = tempBuildOrigin.offset(Y, 1);
         for (int i = 0; i < count; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
             globalHudRenderer.message = String.format("Stepping up %d step%s", count - i, count - i > 1 ? "s" : "");
-            build(AutoHighwaySchematic.STEP_UP, copyBlock(buildOrigin).offset(X, -2).offset(Z, -1));
-            buildOrigin = buildOrigin.offset(X, -2).offset(Y, 1);
+            build(AutoHighwaySchematic.STEP_UP, copyBlock(tempBuildOrigin).offset(X, -2).offset(Z, -1));
+            tempBuildOrigin = tempBuildOrigin.offset(X, -2).offset(Y, 1);
         }
-        return buildOrigin.offset(Y, -1);
     }
 
-    public static void upwardScaffold(StepHeight stepUpHeight, BlockPos standingBlock) {
+    public static void scaffoldUp(StepHeight stepUpHeight, BlockPos standingBlock) {
         BlockPos buildOrigin = copyBlock(standingBlock);
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepUpHeight.containsScaffoldBlockingBlocks;
-        for (int i = 0; i < stepUpHeight.height; i++) {
+        for (int i = 0; i < stepUpHeight.count; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
-            globalHudRenderer.message = String.format("Scaffolding up %d step%s", stepUpHeight.height - i, stepUpHeight.height - i > 1 ? "s" : "");
+            globalHudRenderer.message = String.format("Scaffolding up %d step%s", stepUpHeight.count - i, stepUpHeight.count - i > 1 ? "s" : "");
             build(AutoHighwaySchematic.STEP_SCAFFOLD, copyBlock(buildOrigin).offset(X, -3).offset(Y, 1));
             buildOrigin = offsetBlock(buildOrigin, -2, 1, 0);
         }
@@ -84,7 +85,7 @@ public class Up {
         for (int futureStep = 0; futureStep < Constants.FUTURE_STEPS; futureStep++) {
             BlockPos futureBlock = stepUpBlock.offset(X, -futureStep);
             StepHeight futureStepDownHeight = getStepUpHeight(futureBlock);
-            if (futureStepDownHeight.height >= stepDownHeight) {
+            if (futureStepDownHeight.count >= stepDownHeight) {
                 return 4 * stepDownHeight + futureStep;
             }
         }

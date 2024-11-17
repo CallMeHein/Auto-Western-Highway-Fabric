@@ -1,7 +1,7 @@
 package hein.auto_western_highway.common;
 
 import baritone.api.BaritoneAPI;
-import hein.auto_western_highway.common.types.StepHeight;
+import hein.auto_western_highway.common.types.StepFunctionWithCount;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -11,30 +11,21 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 
 import static hein.auto_western_highway.common.Baritone.resetSettings;
-import static hein.auto_western_highway.common.Blocks.copyBlock;
-import static hein.auto_western_highway.common.Down.*;
+import static hein.auto_western_highway.common.BlockRenderer.blockRendererBlocks;
+import static hein.auto_western_highway.common.FuturePath.renderFuturePath;
 import static hein.auto_western_highway.common.Globals.*;
-import static hein.auto_western_highway.common.Step.step;
-import static hein.auto_western_highway.common.Up.*;
+import static hein.auto_western_highway.common.Movement.adjustStandingBlock;
+import static hein.auto_western_highway.common.Movement.getStepFunction;
 import static hein.auto_western_highway.common.Utils.getStandingBlock;
 import static hein.auto_western_highway.common.Utils.sendStatusMessage;
 
 
 public class AutoWesternHighway implements ModInitializer {
-    private static boolean running = false;
-    private static Thread runningThread;
+    public static boolean running = false;
+    public static boolean displayFuturePath = true;
+    private static Thread scriptThread;
+    private static Thread futurePathThread;
     private static boolean displayStatus = true;
-
-    public static int stopAutoWesternHighway() {
-        if (runningThread != null) {
-            runningThread.interrupt();
-            BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
-            sendStatusMessage("Stopping autoWesternHighway...");
-            running = false;
-            return 1;
-        }
-        return 0;
-    }
 
     private static void setGlobals() {
         globalClient = MinecraftClient.getInstance();
@@ -53,59 +44,79 @@ public class AutoWesternHighway implements ModInitializer {
             return;
         }
         // start the script in a separate thread - this prevents freezing the game whenever we sleep the thread
-        runningThread = new Thread(() -> {
+        scriptThread = new Thread(() -> {
             resetSettings();
             running = true;
             BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().resume();
             mainLoop();
         });
-        runningThread.start();
+        scriptThread.start();
+
+        futurePathThread = new Thread(() -> {
+            try {
+                renderFuturePath();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        });
+        futurePathThread.start();
+    }
+
+    public static void stopAutoWesternHighway() {
+        if (scriptThread != null) {
+            scriptThread.interrupt();
+            futurePathThread.interrupt();
+            BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
+            sendStatusMessage("Stopping autoWesternHighway...");
+            running = false;
+        }
     }
 
     private static void mainLoop() {
         BlockPos standingBlock = getStandingBlock();
         standingBlock = new BlockPos(standingBlock.getX(), standingBlock.getY(), 0);
-        while (true) {
-            // check if/how much we should step up
-            StepHeight stepUpHeight = getStepUpHeight(standingBlock);
-            if (stepUpHeight.height > 0) {
-                int futureStepDownLength = getFutureStepDownLength(standingBlock, stepUpHeight.height);
-                if (futureStepDownLength > 0) {
-                    standingBlock = step(standingBlock, futureStepDownLength);
-                    continue;
-                }
-                upwardScaffold(stepUpHeight, copyBlock(standingBlock));
-                standingBlock = stepUp(stepUpHeight.height, standingBlock);
-                continue;
+        while (running) {
+            StepFunctionWithCount stepFunction = getStepFunction(standingBlock);
+            if (stepFunction == null) {
+                stopAutoWesternHighway();
+                throw new RuntimeException("No step function found");
             }
-            // check if/how much we should step down
-            StepHeight stepDownHeight = getStepDownHeight(standingBlock);
-            if (stepDownHeight.height > 0) {
-                int futureStepUpLength = getFutureStepUpLength(standingBlock, stepUpHeight.height);
-                if (futureStepUpLength > 0) {
-                    standingBlock = step(standingBlock, futureStepUpLength);
-                    continue;
+            try {
+                if (stepFunction.scaffoldFunction != null) {
+                    stepFunction.scaffoldFunction.invoke(null, stepFunction.stepHeight, standingBlock);
                 }
-                downwardScaffold(stepDownHeight, copyBlock(standingBlock));
-                standingBlock = stepDown(stepDownHeight.height, standingBlock);
-                continue;
+                stepFunction.stepFunction.invoke(null, standingBlock, stepFunction.stepHeight.count);
+            } catch (Exception e) {
+                stopAutoWesternHighway();
+                throw new RuntimeException(e);
             }
-            // just step forward if neither
-            standingBlock = step(standingBlock, 1);
+            standingBlock = adjustStandingBlock(standingBlock, stepFunction);
         }
     }
+
 
     @Override
     public void onInitialize() {
         WorldRenderEvents.AFTER_ENTITIES.register(BlockRenderer::blockRendererBlock);
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            // start main script
             dispatcher.register(ClientCommandManager.literal("autoWesternHighway").executes(context -> {
                 setGlobals();
                 autoWesternHighway();
                 return 1;
             }));
 
-            dispatcher.register(ClientCommandManager.literal("toggleStatusDisplay").executes(context -> {
+            // stop main script
+            dispatcher.register(ClientCommandManager.literal("stopAutoWesternHighway").executes(context -> {
+                if (running) {
+                    stopAutoWesternHighway();
+                    return 1;
+                }
+                return 0;
+            }));
+
+            // toggle HUD status texts
+            dispatcher.register(ClientCommandManager.literal("toggleAutoWesternHighwayStatusDisplay").executes(context -> {
                 if (running) {
                     displayStatus = !displayStatus;
                     sendStatusMessage("Showing AutoWesternHighway status: " + displayStatus);
@@ -114,9 +125,18 @@ public class AutoWesternHighway implements ModInitializer {
                 return 0;
             }));
 
-            dispatcher.register(ClientCommandManager.literal("stopAutoWesternHighway").executes(context ->
-                    stopAutoWesternHighway())
-            );
+            // toggle future path wireframe blocks
+            dispatcher.register(ClientCommandManager.literal("toggleAutoWesternHighwayWireframes").executes(context -> {
+                if (running) {
+                    displayFuturePath = !displayFuturePath;
+                    sendStatusMessage("Showing AutoWesternHighway wireframes: " + displayFuturePath);
+                    if (!displayFuturePath) {
+                        blockRendererBlocks = null;
+                    }
+                    return 1;
+                }
+                return 0;
+            }));
         });
     }
 }

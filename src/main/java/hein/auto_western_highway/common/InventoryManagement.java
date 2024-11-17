@@ -198,7 +198,7 @@ public class InventoryManagement {
     }
 
     private static int getRelevantItemCount(ItemStack shulker) {
-        List<String> shulkerItems = invokeVersionSpecific("GetItemIdsInShulker", "getItemIdsInShulker",shulker);
+        List<String> shulkerItems = invokeVersionSpecific("GetItemIdsInShulker", "getItemIdsInShulker", shulker);
         List<String> foundRelevantItems = new ArrayList<>();
         shulkerItems.forEach(itemId -> {
             for (ResourceLoadout resource : getLowMaterials()) {
