@@ -6,6 +6,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 
@@ -96,6 +97,7 @@ public class AutoWesternHighway implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        WorldRenderEvents.AFTER_ENTITIES.register(BlockRenderer::blockRendererBlock);
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(ClientCommandManager.literal("autoWesternHighway").executes(context -> {
                 setGlobals();
