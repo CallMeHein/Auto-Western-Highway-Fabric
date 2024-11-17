@@ -55,6 +55,7 @@ public class AutoWesternHighway implements ModInitializer {
         runningThread = new Thread(() -> {
             resetSettings();
             running = true;
+            BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().resume();
             mainLoop();
         });
         runningThread.start();
