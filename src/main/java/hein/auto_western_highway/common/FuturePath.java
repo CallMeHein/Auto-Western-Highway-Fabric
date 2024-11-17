@@ -1,5 +1,6 @@
 package hein.auto_western_highway.common;
 
+import baritone.api.BaritoneAPI;
 import hein.auto_western_highway.common.types.StepFunctionWithCount;
 import net.minecraft.util.math.BlockPos;
 
@@ -21,7 +22,7 @@ public class FuturePath {
 
     public static void renderFuturePath() throws NoSuchMethodException {
         while (true) {
-            if (!running || !displayFuturePath) {
+            if (!running || !displayFuturePath || BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
                 sleep(2000);
                 continue;
             }
