@@ -58,7 +58,7 @@ public class InventoryManagement {
             ArrayList<ItemStack> shulkers = new ArrayList<>(items.stream().filter(item -> (item.getItem() instanceof BlockItem) && getBlockId(item.getItem()).equals("shulker_box")).toList());
             shulkers.sort(Comparator.comparingInt(shulker -> getRelevantItemCount((ItemStack) shulker)).reversed());
             // if we have no shulkers with needed items, we're done replenishing
-            if (getRelevantItemCount(shulkers.get(0)) == 0) {
+            if (shulkers.isEmpty() || getRelevantItemCount(shulkers.get(0)) == 0) {
                 return;
             }
             // if all materials are above the replenish target threshold, we've successfully replenished
