@@ -56,6 +56,7 @@ public class AutoWesternHighway implements ModInitializer {
             try {
                 renderFuturePath();
             } catch (NoSuchMethodException e) {
+                blockRendererBlocks = null;
                 e.printStackTrace();
             }
         });
@@ -64,6 +65,7 @@ public class AutoWesternHighway implements ModInitializer {
 
     public static void stopAutoWesternHighway() {
         if (scriptThread != null) {
+            blockRendererBlocks = null;
             scriptThread.interrupt();
             futurePathThread.interrupt();
             BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
