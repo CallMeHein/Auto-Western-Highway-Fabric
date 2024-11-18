@@ -11,12 +11,14 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.List;
 
+import static hein.auto_western_highway.common.Globals.globalPlayer;
+
 
 public class BlockRenderer {
     public static List<BlockPos> blockRendererBlocks;
 
-    public static void blockRendererBlock(WorldRenderContext worldRenderContext) {
-        if (blockRendererBlocks == null || blockRendererBlocks.isEmpty()) {
+    public static void renderBlocks(WorldRenderContext worldRenderContext) {
+        if (globalPlayer.get() == null || blockRendererBlocks == null || blockRendererBlocks.isEmpty()) {
             return;
         }
         MatrixStack matrices = worldRenderContext.matrixStack();

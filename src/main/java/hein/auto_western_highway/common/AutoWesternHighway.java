@@ -7,15 +7,16 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 
 import static hein.auto_western_highway.common.Baritone.resetSettings;
 import static hein.auto_western_highway.common.BlockRenderer.blockRendererBlocks;
 import static hein.auto_western_highway.common.FuturePath.renderFuturePath;
-import static hein.auto_western_highway.common.Globals.*;
+import static hein.auto_western_highway.common.Globals.globalHudRenderer;
+import static hein.auto_western_highway.common.Globals.globalPlayerNonNull;
 import static hein.auto_western_highway.common.Movement.adjustStandingBlock;
 import static hein.auto_western_highway.common.Movement.getStepFunction;
+import static hein.auto_western_highway.common.NightLogout.nightLogout;
 import static hein.auto_western_highway.common.Utils.getStandingBlock;
 import static hein.auto_western_highway.common.Utils.sendStatusMessage;
 
@@ -23,13 +24,12 @@ import static hein.auto_western_highway.common.Utils.sendStatusMessage;
 public class AutoWesternHighway implements ModInitializer {
     public static boolean running = false;
     public static boolean displayFuturePath = true;
+    public static boolean nightLogout = false;
     private static Thread scriptThread;
     private static Thread futurePathThread;
     private static boolean displayStatus = true;
 
     private static void setGlobals() {
-        globalClient = MinecraftClient.getInstance();
-        globalPlayer = globalClient.player;
         globalHudRenderer = new HudRender();
         HudRenderCallback.EVENT.register((drawContext, delta) -> {
             if (running && displayStatus) {
@@ -75,7 +75,7 @@ public class AutoWesternHighway implements ModInitializer {
     }
 
     private static void mainLoop() {
-        BlockPos standingBlock = getStandingBlock();
+        BlockPos standingBlock = getStandingBlock(globalPlayerNonNull.get());
         standingBlock = new BlockPos(standingBlock.getX(), standingBlock.getY(), 0);
         while (running) {
             StepFunctionWithCount stepFunction = getStepFunction(standingBlock);
@@ -93,13 +93,14 @@ public class AutoWesternHighway implements ModInitializer {
                 throw new RuntimeException(e);
             }
             standingBlock = adjustStandingBlock(standingBlock, stepFunction);
+            nightLogout();
         }
     }
 
 
     @Override
     public void onInitialize() {
-        WorldRenderEvents.AFTER_ENTITIES.register(BlockRenderer::blockRendererBlock);
+        WorldRenderEvents.AFTER_ENTITIES.register(BlockRenderer::renderBlocks);
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             // start main script
             dispatcher.register(ClientCommandManager.literal("autoWesternHighway").executes(context -> {
@@ -118,17 +119,21 @@ public class AutoWesternHighway implements ModInitializer {
             }));
 
             // toggle HUD status texts
-            dispatcher.register(ClientCommandManager.literal("toggleAutoWesternHighwayStatusDisplay").executes(context -> {
-                if (running) {
-                    displayStatus = !displayStatus;
-                    sendStatusMessage("Showing AutoWesternHighway status: " + displayStatus);
-                    return 1;
-                }
-                return 0;
+            dispatcher.register(ClientCommandManager.literal("toggleAWHStatusDisplay").executes(context -> {
+                displayStatus = !displayStatus;
+                sendStatusMessage("Showing AutoWesternHighway status: " + displayStatus);
+                return 1;
+            }));
+
+            // toggle logout before night
+            dispatcher.register(ClientCommandManager.literal("toggleAWHNightLogout").executes(context -> {
+                nightLogout = !nightLogout;
+                sendStatusMessage("Logging out before nightfall: " + nightLogout);
+                return 1;
             }));
 
             // toggle future path wireframe blocks
-            dispatcher.register(ClientCommandManager.literal("toggleAutoWesternHighwayWireframes").executes(context -> {
+            dispatcher.register(ClientCommandManager.literal("toggleAWHWireframes").executes(context -> {
                 if (running) {
                     displayFuturePath = !displayFuturePath;
                     sendStatusMessage("Showing AutoWesternHighway wireframes: " + displayFuturePath);

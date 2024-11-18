@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static hein.auto_western_highway.common.Globals.globalPlayer;
+import static hein.auto_western_highway.common.Globals.globalPlayerNonNull;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Blocks {
@@ -46,13 +46,13 @@ public class Blocks {
     }
 
     public static List<String> getBlocksNameFromBlockPositions(List<BlockPos> blockPositions) {
-        return blockPositions.stream().map(block -> getBlockId(globalPlayer.clientWorld.getBlockState(block).getBlock())).toList();
+        return blockPositions.stream().map(block -> getBlockId(globalPlayerNonNull.get().clientWorld.getBlockState(block).getBlock())).toList();
     }
 
     public static List<BlocknameAndState> getBlocknamesAndStatesFromBlockPositions(List<BlockPos> blockPositions) {
         List<BlocknameAndState> blocknamesAndStates = new ArrayList<>();
         blockPositions.forEach(blockPos -> {
-            BlockState state = globalPlayer.clientWorld.getBlockState(blockPos);
+            BlockState state = globalPlayerNonNull.get().clientWorld.getBlockState(blockPos);
             blocknamesAndStates.add(new BlocknameAndState(getBlockId(state.getBlock()), state));
         });
         return blocknamesAndStates;

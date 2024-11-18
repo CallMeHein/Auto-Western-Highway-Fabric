@@ -11,6 +11,8 @@ import static hein.auto_western_highway.common.AutoWesternHighway.displayFutureP
 import static hein.auto_western_highway.common.AutoWesternHighway.running;
 import static hein.auto_western_highway.common.BlockRenderer.blockRendererBlocks;
 import static hein.auto_western_highway.common.Down.getRayDownBlockPositions;
+import static hein.auto_western_highway.common.Globals.globalPlayer;
+import static hein.auto_western_highway.common.Globals.globalPlayerNonNull;
 import static hein.auto_western_highway.common.Movement.adjustStandingBlock;
 import static hein.auto_western_highway.common.Movement.getStepFunction;
 import static hein.auto_western_highway.common.Up.getRayUpBlockPositions;
@@ -22,11 +24,11 @@ public class FuturePath {
 
     public static void renderFuturePath() throws NoSuchMethodException {
         while (true) {
-            if (!running || !displayFuturePath || BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
+            if (globalPlayer.get() == null || !running || !displayFuturePath || BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
                 sleep(2000);
                 continue;
             }
-            BlockPos currentStandingBlock = getStandingBlock();
+            BlockPos currentStandingBlock = getStandingBlock(globalPlayerNonNull.get());
             BlockPos currentHighwayPosition = new BlockPos(currentStandingBlock.getX(), currentStandingBlock.getY(), 0);
             if (currentHighwayPosition.equals(lastProcessedHighwayPosition)) {
                 sleep(2000);
