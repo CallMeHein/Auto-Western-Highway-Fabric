@@ -10,5 +10,5 @@ public class Globals {
     public static final Supplier<MinecraftClient> globalClient = MinecraftClient::getInstance;
     public static final Supplier<@Nullable ClientPlayerEntity> globalPlayer = () -> globalClient.get().player;
     public static final Supplier<ClientPlayerEntity> globalPlayerNonNull = () -> globalClient.get().player;
-    public static HudRender globalHudRenderer;
+    public static HudRenderer globalHudRenderer;
 }

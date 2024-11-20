@@ -16,7 +16,7 @@ public class Step {
         for (int i = 0; i < count; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
-            globalHudRenderer.message = String.format("Stepping %d block%s", count - i, count - i > 1 ? "s" : "");
+            globalHudRenderer.buildMessage = String.format("Stepping %d block%s", count - i, count - i > 1 ? "s" : "");
             Baritone.build(STEP, tempBuildOrigin.offset(X, -1).offset(Z, -1));
             tempBuildOrigin = tempBuildOrigin.offset(X, -1);
         }

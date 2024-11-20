@@ -30,7 +30,7 @@ public class AutoWesternHighway implements ModInitializer {
     private static boolean displayStatus = true;
 
     private static void setGlobals() {
-        globalHudRenderer = new HudRender();
+        globalHudRenderer = new HudRenderer();
         HudRenderCallback.EVENT.register((drawContext, delta) -> {
             if (running && displayStatus) {
                 globalHudRenderer.render(drawContext);

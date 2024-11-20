@@ -61,11 +61,11 @@ public class InventoryManagement {
             shulkers.sort(Comparator.comparingInt(shulker -> getRelevantItemCount((ItemStack) shulker)).reversed());
             // if we have no shulkers with needed items, we're done replenishing
             if (shulkers.isEmpty() || getRelevantItemCount(shulkers.get(0)) == 0) {
-                return;
+                break;
             }
             // if all materials are above the replenish target threshold, we've successfully replenished
             if (getUnfilledMaterials().isEmpty()) {
-                return;
+                break;
             }
             placeShulker(shulkers.get(0), items);
             extractItems();
@@ -77,9 +77,10 @@ public class InventoryManagement {
             waitUntilTrue(() -> getPlayerFeetBlock(globalPlayerNonNull.get()).getY() == globalPlayerNonNull.get().getPos().getY());
 
             int shulkerCount = getShulkerCount();
-            breakBlock(getStandingBlock(globalPlayerNonNull.get()), "shulker_box");
+            breakBlock(getStandingBlock(globalPlayerNonNull.get()));
             waitUntilTrue(() -> getShulkerCount() > shulkerCount);
         }
+        globalHudRenderer.inventoryManagementMessage = null;
     }
 
     private static int getShulkerCount() {
@@ -149,6 +150,7 @@ public class InventoryManagement {
     }
 
     private static void placeShulker(ItemStack shulker, ArrayList<ItemStack> items) {
+        globalHudRenderer.inventoryManagementMessage = "Placing Shulker";
         BaritoneAPI.getSettings().buildIgnoreBlocks.value = new ArrayList<>();
         BaritoneAPI.getSettings().layerOrder.value = false;
         build(CLEAR_PLAYER_SPACE, offsetBlock(getPlayerFeetBlock(globalPlayerNonNull.get()), -1, 1, -1));
@@ -183,10 +185,11 @@ public class InventoryManagement {
                 )));
     }
 
-    private static void breakBlock(BlockPos position, String blockId) {
+    private static void breakBlock(BlockPos position) {
+        globalHudRenderer.inventoryManagementMessage = "Breaking Shulker";
         ClientPlayerInteractionManager interactionManager = globalClient.get().interactionManager;
         assert interactionManager != null;
-        while (getBlocksNameFromBlockPositions(List.of(position)).stream().findFirst().orElseThrow().equals(blockId)) {
+        while (getBlocksNameFromBlockPositions(List.of(position)).stream().findFirst().orElseThrow().equals("shulker_box")) {
             CountDownLatch latch = new CountDownLatch(1);
             globalClient.get().execute(() -> {
                 interactionManager.attackBlock(position, Direction.UP);
