@@ -69,6 +69,7 @@ public class Down {
 
     public static void scaffoldDown(StepHeight stepDownHeight, BlockPos standingBlock) {
         BlockPos buildOrigin = copyBlock(standingBlock);
+        buildOrigin = offsetBlock(buildOrigin, 0, 1, 0);
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepDownHeight.containsScaffoldBlockingBlocks;
         for (int i = 0; i < stepDownHeight.count; i++) {

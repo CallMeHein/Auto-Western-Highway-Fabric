@@ -68,6 +68,7 @@ public class Up {
 
     public static void scaffoldUp(StepHeight stepUpHeight, BlockPos standingBlock) {
         BlockPos buildOrigin = copyBlock(standingBlock);
+        buildOrigin = offsetBlock(buildOrigin, 0, -1, 0);
         Settings settings = BaritoneAPI.getSettings();
         settings.buildIgnoreExisting.value = !stepUpHeight.containsScaffoldBlockingBlocks;
         for (int i = 0; i < stepUpHeight.count; i++) {
