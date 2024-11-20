@@ -52,7 +52,6 @@ public class Constants {
             SPRUCE_LEAVES,
             SUGAR_CANE,
             SUNFLOWER,
-            TALL_GRASS,
             TORCH,
             TORCHFLOWER,
             WALL_TORCH,
