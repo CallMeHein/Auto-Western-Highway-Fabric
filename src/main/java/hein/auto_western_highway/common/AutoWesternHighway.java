@@ -133,10 +133,10 @@ public class AutoWesternHighway implements ModInitializer {
             }));
 
             // toggle future path wireframe blocks
-            dispatcher.register(ClientCommandManager.literal("toggleAWHWireframes").executes(context -> {
+            dispatcher.register(ClientCommandManager.literal("toggleAWHFuturePath").executes(context -> {
                 if (running) {
                     displayFuturePath = !displayFuturePath;
-                    sendStatusMessage("Showing AutoWesternHighway wireframes: " + displayFuturePath);
+                    sendStatusMessage("Showing AutoWesternHighway future path: " + displayFuturePath);
                     if (!displayFuturePath) {
                         blockRendererBlocks = null;
                     }
