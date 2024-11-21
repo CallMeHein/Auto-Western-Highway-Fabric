@@ -32,7 +32,6 @@ Put the schematics from ./schematics into your baritone's schematic folder (defa
     - Stone Brick Slabs
     - Smooth Stone
     - Smooth Stone Slabs
-    - Dirt
     - (Optional) Shulkers containing any of the above
 
 ### Tips
