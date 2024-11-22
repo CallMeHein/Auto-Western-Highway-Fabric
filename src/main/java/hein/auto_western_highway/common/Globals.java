@@ -1,5 +1,6 @@
 package hein.auto_western_highway.common;
 
+import hein.auto_western_highway.common.render.HudRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.jetbrains.annotations.Nullable;

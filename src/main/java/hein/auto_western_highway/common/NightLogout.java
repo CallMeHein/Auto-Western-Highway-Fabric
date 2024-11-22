@@ -9,8 +9,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import static hein.auto_western_highway.common.AutoWesternHighway.nightLogout;
+import static hein.auto_western_highway.common.utils.Blocks.getPlayerFeetBlock;
 import static hein.auto_western_highway.common.Globals.*;
-import static hein.auto_western_highway.common.Utils.*;
+import static hein.auto_western_highway.common.utils.Wait.sleep;
+import static hein.auto_western_highway.common.utils.Wait.waitUntilTrue;
 
 public class NightLogout {
     // not the actual values; rounded and padded to allow for some wiggle room without letting mobs spawn

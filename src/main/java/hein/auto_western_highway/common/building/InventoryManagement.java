@@ -1,4 +1,4 @@
-package hein.auto_western_highway.common;
+package hein.auto_western_highway.common.building;
 
 import baritone.api.BaritoneAPI;
 import hein.auto_western_highway.common.types.ResourceLoadout;
@@ -30,14 +30,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static hein.auto_western_highway.common.AutoHighwaySchematic.CLEAR_PLAYER_SPACE;
+import static hein.auto_western_highway.common.types.AutoHighwaySchematic.CLEAR_PLAYER_SPACE;
 import static hein.auto_western_highway.common.AutoWesternHighway.stopAutoWesternHighway;
-import static hein.auto_western_highway.common.Baritone.build;
-import static hein.auto_western_highway.common.Baritone.resetSettings;
-import static hein.auto_western_highway.common.Blocks.*;
+import static hein.auto_western_highway.common.utils.Blocks.*;
 import static hein.auto_western_highway.common.Globals.*;
-import static hein.auto_western_highway.common.InvokeVersionSpecific.invokeVersionSpecific;
-import static hein.auto_western_highway.common.Utils.*;
+import static hein.auto_western_highway.common.utils.InvokeVersionSpecific.invokeVersionSpecific;
+import static hein.auto_western_highway.common.utils.Wait.*;
+import static hein.auto_western_highway.common.building.Baritone.build;
+import static hein.auto_western_highway.common.building.Baritone.resetSettings;
 import static hein.auto_western_highway.common.types.InventoryLoadout.*;
 import static net.minecraft.screen.slot.SlotActionType.*;
 import static net.minecraft.util.Hand.MAIN_HAND;

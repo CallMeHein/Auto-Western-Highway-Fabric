@@ -1,6 +1,9 @@
-package hein.auto_western_highway.common;
+package hein.auto_western_highway.common.render;
 
 import baritone.api.BaritoneAPI;
+import hein.auto_western_highway.common.building.Down;
+import hein.auto_western_highway.common.building.Step;
+import hein.auto_western_highway.common.building.Up;
 import hein.auto_western_highway.common.types.StepFunctionWithCount;
 import net.minecraft.util.math.BlockPos;
 
@@ -9,15 +12,15 @@ import java.util.List;
 
 import static hein.auto_western_highway.common.AutoWesternHighway.displayFuturePath;
 import static hein.auto_western_highway.common.AutoWesternHighway.running;
-import static hein.auto_western_highway.common.BlockRenderer.blockRendererBlocks;
-import static hein.auto_western_highway.common.Down.getRayDownBlockPositions;
+import static hein.auto_western_highway.common.render.BlockRenderer.blockRendererBlocks;
+import static hein.auto_western_highway.common.utils.Blocks.getStandingBlock;
 import static hein.auto_western_highway.common.Globals.globalPlayer;
 import static hein.auto_western_highway.common.Globals.globalPlayerNonNull;
-import static hein.auto_western_highway.common.Movement.adjustStandingBlock;
-import static hein.auto_western_highway.common.Movement.getStepFunction;
-import static hein.auto_western_highway.common.Up.getRayUpBlockPositions;
-import static hein.auto_western_highway.common.Utils.getStandingBlock;
-import static hein.auto_western_highway.common.Utils.sleep;
+import static hein.auto_western_highway.common.utils.Wait.sleep;
+import static hein.auto_western_highway.common.building.Down.getRayDownBlockPositions;
+import static hein.auto_western_highway.common.building.Movement.adjustStandingBlock;
+import static hein.auto_western_highway.common.building.Movement.getStepFunction;
+import static hein.auto_western_highway.common.building.Up.getRayUpBlockPositions;
 
 public class FuturePath {
     private static BlockPos lastProcessedHighwayPosition;

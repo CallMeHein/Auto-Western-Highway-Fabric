@@ -1,24 +1,26 @@
 package hein.auto_western_highway.common;
 
 import baritone.api.BaritoneAPI;
+import hein.auto_western_highway.common.render.BlockRenderer;
+import hein.auto_western_highway.common.render.HudRenderer;
 import hein.auto_western_highway.common.types.StepFunctionWithCount;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-import static hein.auto_western_highway.common.Baritone.resetSettings;
-import static hein.auto_western_highway.common.BlockRenderer.blockRendererBlocks;
-import static hein.auto_western_highway.common.FuturePath.renderFuturePath;
-import static hein.auto_western_highway.common.Globals.globalHudRenderer;
-import static hein.auto_western_highway.common.Globals.globalPlayerNonNull;
-import static hein.auto_western_highway.common.Movement.adjustStandingBlock;
-import static hein.auto_western_highway.common.Movement.getStepFunction;
+import static hein.auto_western_highway.common.render.BlockRenderer.blockRendererBlocks;
+import static hein.auto_western_highway.common.utils.Blocks.getStandingBlock;
+import static hein.auto_western_highway.common.Globals.*;
 import static hein.auto_western_highway.common.NightLogout.nightLogout;
-import static hein.auto_western_highway.common.Utils.getStandingBlock;
-import static hein.auto_western_highway.common.Utils.sendStatusMessage;
+import static hein.auto_western_highway.common.building.Baritone.resetSettings;
+import static hein.auto_western_highway.common.building.Movement.adjustStandingBlock;
+import static hein.auto_western_highway.common.building.Movement.getStepFunction;
+import static hein.auto_western_highway.common.render.FuturePath.renderFuturePath;
 
 
 public class AutoWesternHighway implements ModInitializer {
@@ -97,6 +99,12 @@ public class AutoWesternHighway implements ModInitializer {
         }
     }
 
+    public static void sendStatusMessage(String message) {
+        ClientPlayerEntity player = globalPlayer.get();
+        if (player != null) {
+            player.sendMessage(Text.literal(message));
+        }
+    }
 
     @Override
     public void onInitialize() {

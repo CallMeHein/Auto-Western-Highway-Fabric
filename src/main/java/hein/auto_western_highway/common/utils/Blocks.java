@@ -1,7 +1,9 @@
-package hein.auto_western_highway.common;
+package hein.auto_western_highway.common.utils;
 
+import hein.auto_western_highway.common.types.BlocknameAndState;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -15,6 +17,14 @@ import static hein.auto_western_highway.common.Globals.globalPlayerNonNull;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Blocks {
+    public static BlockPos getStandingBlock(ClientPlayerEntity player) {
+        return offsetBlock(getPlayerFeetBlock(player), 0, -1, 0);
+    }
+
+    public static BlockPos getPlayerFeetBlock(ClientPlayerEntity player) {
+        return player.getBlockPos();
+    }
+
     public static String getBlockId(BlockItem item) {
         return Registries.BLOCK.getId(item.getBlock()).getPath();
     }

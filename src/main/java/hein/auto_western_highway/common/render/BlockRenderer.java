@@ -1,4 +1,4 @@
-package hein.auto_western_highway.common;
+package hein.auto_western_highway.common.render;
 
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.render.RenderLayer;

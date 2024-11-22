@@ -1,14 +1,14 @@
-package hein.auto_western_highway.common;
+package hein.auto_western_highway.common.building;
 
 import hein.auto_western_highway.common.types.StepFunctionWithCount;
 import hein.auto_western_highway.common.types.StepHeight;
 import net.minecraft.util.math.BlockPos;
 
-import static hein.auto_western_highway.common.Blocks.offsetBlock;
-import static hein.auto_western_highway.common.Down.getFutureStepDownLength;
-import static hein.auto_western_highway.common.Down.getStepDownHeight;
-import static hein.auto_western_highway.common.Up.getFutureStepUpLength;
-import static hein.auto_western_highway.common.Up.getStepUpHeight;
+import static hein.auto_western_highway.common.utils.Blocks.offsetBlock;
+import static hein.auto_western_highway.common.building.Down.getFutureStepDownLength;
+import static hein.auto_western_highway.common.building.Down.getStepDownHeight;
+import static hein.auto_western_highway.common.building.Up.getFutureStepUpLength;
+import static hein.auto_western_highway.common.building.Up.getStepUpHeight;
 
 public class Movement {
     public static BlockPos adjustStandingBlock(BlockPos standingBlock, StepFunctionWithCount stepFunction) {

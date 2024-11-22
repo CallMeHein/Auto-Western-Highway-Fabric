@@ -1,4 +1,4 @@
-package hein.auto_western_highway.common;
+package hein.auto_western_highway.common.utils;
 
 import net.fabricmc.loader.api.FabricLoader;
 

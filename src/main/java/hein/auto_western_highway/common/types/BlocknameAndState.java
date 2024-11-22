@@ -1,4 +1,4 @@
-package hein.auto_western_highway.common;
+package hein.auto_western_highway.common.types;
 
 import net.minecraft.block.BlockState;
 

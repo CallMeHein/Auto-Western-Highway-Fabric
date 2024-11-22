@@ -1,8 +1,10 @@
-package hein.auto_western_highway.common;
+package hein.auto_western_highway.common.building;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import baritone.api.process.IBuilderProcess;
+import hein.auto_western_highway.common.types.AutoHighwaySchematic;
+import hein.auto_western_highway.common.utils.Blocks;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static hein.auto_western_highway.common.Constants.buildIgnoreBlocks;
-import static hein.auto_western_highway.common.Utils.waitUntilTrue;
+import static hein.auto_western_highway.common.utils.Wait.waitUntilTrue;
 import static net.minecraft.block.Blocks.*;
 
 public class Baritone {
