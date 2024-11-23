@@ -80,6 +80,7 @@ public class Blocks {
                 "leaves",
                 "lilac",
                 "lily_pad",
+                "moss",
                 "nether",
                 "obsidian",
                 "poppy",

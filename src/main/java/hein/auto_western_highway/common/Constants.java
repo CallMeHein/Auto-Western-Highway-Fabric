@@ -35,7 +35,6 @@ public class Constants {
             MANGROVE_LEAVES,
             MANGROVE_LOG,
             MANGROVE_ROOTS,
-            MOSSY_COBBLESTONE,
             MUDDY_MANGROVE_ROOTS,
             OAK_LEAVES,
             ORANGE_TULIP,
