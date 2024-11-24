@@ -30,15 +30,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static hein.auto_western_highway.common.types.AutoHighwaySchematic.CLEAR_PLAYER_SPACE;
 import static hein.auto_western_highway.common.AutoWesternHighway.stopAutoWesternHighway;
-import static hein.auto_western_highway.common.utils.Blocks.*;
 import static hein.auto_western_highway.common.Globals.*;
-import static hein.auto_western_highway.common.utils.InvokeVersionSpecific.invokeVersionSpecific;
-import static hein.auto_western_highway.common.utils.Wait.*;
 import static hein.auto_western_highway.common.building.Baritone.build;
 import static hein.auto_western_highway.common.building.Baritone.resetSettings;
+import static hein.auto_western_highway.common.types.AutoHighwaySchematic.CLEAR_PLAYER_SPACE;
 import static hein.auto_western_highway.common.types.InventoryLoadout.*;
+import static hein.auto_western_highway.common.utils.Blocks.*;
+import static hein.auto_western_highway.common.utils.InvokeVersionSpecific.invokeVersionSpecific;
+import static hein.auto_western_highway.common.utils.Wait.sleep;
+import static hein.auto_western_highway.common.utils.Wait.waitUntilTrue;
 import static net.minecraft.screen.slot.SlotActionType.*;
 import static net.minecraft.util.Hand.MAIN_HAND;
 
@@ -143,6 +144,7 @@ public class InventoryManagement {
                 if (resource.block.equals(itemId)) {
                     clickSlot(item, shulkerSlotId, QUICK_MOVE);
                     addToInventoryLoadout(itemId, item.getCount());
+                    sleep(100); // allow inventory to update
                     break;
                 }
             }
