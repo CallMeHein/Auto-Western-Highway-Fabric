@@ -13,14 +13,16 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-import static hein.auto_western_highway.common.render.BlockRenderer.blockRendererBlocks;
-import static hein.auto_western_highway.common.utils.Blocks.getStandingBlock;
+import java.util.List;
+
 import static hein.auto_western_highway.common.Globals.*;
 import static hein.auto_western_highway.common.NightLogout.nightLogout;
 import static hein.auto_western_highway.common.building.Baritone.resetSettings;
+import static hein.auto_western_highway.common.building.DetermineStepFunction.determineStepFunction;
 import static hein.auto_western_highway.common.building.Movement.adjustStandingBlock;
-import static hein.auto_western_highway.common.building.Movement.getStepFunction;
+import static hein.auto_western_highway.common.render.BlockRenderer.blockRendererBlocks;
 import static hein.auto_western_highway.common.render.FuturePath.renderFuturePath;
+import static hein.auto_western_highway.common.utils.Blocks.getStandingBlock;
 
 
 public class AutoWesternHighway implements ModInitializer {
@@ -80,22 +82,20 @@ public class AutoWesternHighway implements ModInitializer {
         BlockPos standingBlock = getStandingBlock(globalPlayerNonNull.get());
         standingBlock = new BlockPos(standingBlock.getX(), standingBlock.getY(), 0);
         while (running) {
-            StepFunctionWithCount stepFunction = getStepFunction(standingBlock);
-            if (stepFunction == null) {
-                stopAutoWesternHighway();
-                throw new RuntimeException("No step function found");
-            }
+            List<StepFunctionWithCount> stepFunctions = determineStepFunction(standingBlock);
             try {
-                if (stepFunction.scaffoldFunction != null) {
-                    stepFunction.scaffoldFunction.invoke(null, stepFunction.stepHeight, standingBlock);
+                for (StepFunctionWithCount stepFunction : stepFunctions) {
+                    if (stepFunction.scaffoldFunction != null) {
+                        stepFunction.scaffoldFunction.invoke(null, stepFunction.stepHeight, standingBlock);
+                    }
+                    stepFunction.stepFunction.invoke(null, standingBlock, stepFunction.stepHeight.count);
+                    standingBlock = adjustStandingBlock(standingBlock, stepFunction);
+                    nightLogout();
                 }
-                stepFunction.stepFunction.invoke(null, standingBlock, stepFunction.stepHeight.count);
             } catch (Exception e) {
                 stopAutoWesternHighway();
                 throw new RuntimeException(e);
             }
-            standingBlock = adjustStandingBlock(standingBlock, stepFunction);
-            nightLogout();
         }
     }
 

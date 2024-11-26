@@ -37,7 +37,7 @@ import static hein.auto_western_highway.common.building.Baritone.resetSettings;
 import static hein.auto_western_highway.common.types.AutoHighwaySchematic.CLEAR_PLAYER_SPACE;
 import static hein.auto_western_highway.common.types.InventoryLoadout.*;
 import static hein.auto_western_highway.common.utils.Blocks.*;
-import static hein.auto_western_highway.common.utils.InvokeVersionSpecific.invokeVersionSpecific;
+import static hein.auto_western_highway.common.utils.Reflections.invokeVersionSpecific;
 import static hein.auto_western_highway.common.utils.Wait.sleep;
 import static hein.auto_western_highway.common.utils.Wait.waitUntilTrue;
 import static net.minecraft.screen.slot.SlotActionType.*;

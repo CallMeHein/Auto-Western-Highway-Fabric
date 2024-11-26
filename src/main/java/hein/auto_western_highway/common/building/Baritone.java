@@ -63,7 +63,7 @@ public class Baritone {
         }
     }
 
-    private static List<BlockPos> getSchematicBlockPositions(AutoHighwaySchematic schematic, BlockPos buildOrigin) {
+    public static List<BlockPos> getSchematicBlockPositions(AutoHighwaySchematic schematic, BlockPos buildOrigin) {
         List<BlockPos> blocks = new ArrayList<>();
         switch (schematic) {
             case STEP -> {
@@ -82,6 +82,9 @@ public class Baritone {
                 for (int x = 0; x < 3; x++) {
                     blocks.add(new BlockPos(buildOrigin.getX() + x, buildOrigin.getY(), 0));
                 }
+            }
+            case CLEAR_PLAYER_SPACE -> {
+                return List.of();
             }
             default -> throw new IllegalStateException("Unknown AutoHighwaySchematic in pathing: " + schematic);
         }

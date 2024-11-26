@@ -54,6 +54,7 @@ public class Constants {
             TORCH,
             TORCHFLOWER,
             WALL_TORCH,
+            WATER,
             WHEAT,
             WHITE_TULIP,
             WITHER_ROSE

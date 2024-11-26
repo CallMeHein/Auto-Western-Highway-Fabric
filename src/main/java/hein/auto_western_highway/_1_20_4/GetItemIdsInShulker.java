@@ -8,7 +8,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class GetItemIdsInShulker {
-    public static List<String> getItemIdsInShulker(ItemStack shulker){
+    public static List<String> getItemIdsInShulker(ItemStack shulker) {
         if (shulker.getNbt() == null) {
             return List.of();
         }
