@@ -16,10 +16,10 @@ import static hein.auto_western_highway.common.building.InventoryManagement.repl
 import static hein.auto_western_highway.common.building.InventoryManagement.setHotbarToInventoryLoadout;
 import static hein.auto_western_highway.common.types.AutoHighwaySchematic.*;
 import static hein.auto_western_highway.common.utils.Blocks.*;
-import static net.minecraft.util.math.Direction.Axis.X;
 import static net.minecraft.util.math.Direction.Axis.Y;
 
 public class Down {
+    @SuppressWarnings("unused")
     public static StepHeight getStepDownHeight(BlockPos standingBlock) {
         List<String> rayDownBlocks = getBlocksNameFromBlockPositions(getRayDownBlockPositions(standingBlock));
         StepHeight stepHeight = new StepHeight(
@@ -55,6 +55,7 @@ public class Down {
         return blocks.subList(1, blocks.size());
     }
 
+    @SuppressWarnings("unused")
     public static void stepDown(BlockPos buildOrigin, int count) {
         BlockPos tempBuildOrigin = copyBlock(buildOrigin);
         tempBuildOrigin = tempBuildOrigin.offset(Y, 1);
@@ -68,6 +69,7 @@ public class Down {
         }
     }
 
+    @SuppressWarnings("unused")
     public static void scaffoldDown(StepHeight stepDownHeight, BlockPos standingBlock) {
         BlockPos buildOrigin = copyBlock(standingBlock);
         buildOrigin = offsetBlock(buildOrigin, 0, 1, 0);
@@ -94,17 +96,4 @@ public class Down {
         }
         resetSettings();
     }
-
-    public static int getFutureStepDownLength(BlockPos standingBlock, int stepUpHeight) {
-        BlockPos stepUpBlock = copyBlock(standingBlock, -2 * stepUpHeight, stepUpHeight, 0);
-        for (int futureStep = 0; futureStep < Constants.FUTURE_STEPS; futureStep++) {
-            BlockPos futureBlock = stepUpBlock.offset(X, -futureStep);
-            StepHeight futureStepDownHeight = getStepDownHeight(futureBlock);
-            if (futureStepDownHeight.count >= stepUpHeight) {
-                return 4 * stepUpHeight + futureStep;
-            }
-        }
-        return 0;
-    }
-
 }

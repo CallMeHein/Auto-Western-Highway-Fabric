@@ -10,7 +10,9 @@ import static hein.auto_western_highway.common.utils.Blocks.copyBlock;
 import static net.minecraft.util.math.Direction.Axis.X;
 import static net.minecraft.util.math.Direction.Axis.Z;
 
+@SuppressWarnings("unused")
 public class Step {
+    @SuppressWarnings("unused")
     public static void step(BlockPos buildOrigin, int count) {
         BlockPos tempBuildOrigin = copyBlock(buildOrigin);
         for (int i = 0; i < count; i++) {

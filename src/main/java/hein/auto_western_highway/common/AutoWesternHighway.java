@@ -2,6 +2,7 @@ package hein.auto_western_highway.common;
 
 import baritone.api.BaritoneAPI;
 import hein.auto_western_highway.common.render.BlockRenderer;
+import hein.auto_western_highway.common.render.FuturePath;
 import hein.auto_western_highway.common.render.HudRenderer;
 import hein.auto_western_highway.common.types.StepFunctionWithCount;
 import net.fabricmc.api.ModInitializer;
@@ -21,7 +22,6 @@ import static hein.auto_western_highway.common.building.Baritone.resetSettings;
 import static hein.auto_western_highway.common.building.DetermineStepFunction.determineStepFunction;
 import static hein.auto_western_highway.common.building.Movement.adjustStandingBlock;
 import static hein.auto_western_highway.common.render.BlockRenderer.blockRendererBlocks;
-import static hein.auto_western_highway.common.render.FuturePath.renderFuturePath;
 import static hein.auto_western_highway.common.utils.Blocks.getStandingBlock;
 
 
@@ -56,14 +56,7 @@ public class AutoWesternHighway implements ModInitializer {
         });
         scriptThread.start();
 
-        futurePathThread = new Thread(() -> {
-            try {
-                renderFuturePath();
-            } catch (NoSuchMethodException e) {
-                blockRendererBlocks = null;
-                e.printStackTrace();
-            }
-        });
+        futurePathThread = new Thread(FuturePath::renderFuturePath);
         futurePathThread.start();
     }
 

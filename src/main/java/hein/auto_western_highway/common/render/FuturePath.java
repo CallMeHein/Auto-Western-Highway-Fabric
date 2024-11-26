@@ -23,7 +23,7 @@ import static hein.auto_western_highway.common.utils.Wait.sleep;
 public class FuturePath {
     private static BlockPos lastProcessedHighwayPosition;
 
-    public static void renderFuturePath() throws NoSuchMethodException {
+    public static void renderFuturePath() {
         while (true) {
             if (globalPlayer.get() == null || !running || !displayFuturePath || BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
                 sleep(2000);

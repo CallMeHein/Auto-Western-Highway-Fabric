@@ -20,6 +20,7 @@ import static hein.auto_western_highway.common.utils.Blocks.*;
 import static net.minecraft.util.math.Direction.Axis.*;
 
 public class Up {
+    @SuppressWarnings("unused")
     public static StepHeight getStepUpHeight(BlockPos standingBlock) {
         List<String> rayUpBlocks = getBlocksNameFromBlockPositions(getRayUpBlockPositions(standingBlock));
         StepHeight stepHeight = new StepHeight(
@@ -57,6 +58,7 @@ public class Up {
         return blocks.subList(1, blocks.size());
     }
 
+    @SuppressWarnings("unused")
     public static void stepUp(BlockPos buildOrigin, int count) {
         BlockPos tempBuildOrigin = copyBlock(buildOrigin);
         tempBuildOrigin = tempBuildOrigin.offset(Y, 1);
@@ -69,6 +71,7 @@ public class Up {
         }
     }
 
+    @SuppressWarnings("unused")
     public static void scaffoldUp(StepHeight stepUpHeight, BlockPos standingBlock) {
         BlockPos buildOrigin = copyBlock(standingBlock);
         buildOrigin = offsetBlock(buildOrigin, 0, -1, 0);
@@ -82,17 +85,5 @@ public class Up {
             buildOrigin = offsetBlock(buildOrigin, -2, 1, 0);
         }
         resetSettings();
-    }
-
-    public static int getFutureStepUpLength(BlockPos standingBlock, int stepDownHeight) {
-        BlockPos stepUpBlock = copyBlock(standingBlock).offset(X, -2 * stepDownHeight).offset(Y, -stepDownHeight);
-        for (int futureStep = 0; futureStep < Constants.FUTURE_STEPS; futureStep++) {
-            BlockPos futureBlock = stepUpBlock.offset(X, -futureStep);
-            StepHeight futureStepDownHeight = getStepUpHeight(futureBlock);
-            if (futureStepDownHeight.count >= stepDownHeight) {
-                return 4 * stepDownHeight + futureStep;
-            }
-        }
-        return 0;
     }
 }

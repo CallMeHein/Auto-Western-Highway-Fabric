@@ -9,7 +9,6 @@ import static net.minecraft.block.Blocks.*;
 
 public class Constants {
     public static final int MAX_RAY_STEPS = 100;
-    public static final int FUTURE_STEPS = 7;
 
     public static final List<Block> buildIgnoreBlocks = List.of(
             ACACIA_LEAVES,
