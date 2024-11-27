@@ -8,7 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import java.util.List;
 
 import static hein.auto_western_highway.common.building.Movement.adjustStandingBlock;
-import static hein.auto_western_highway.common.utils.Blocks.*;
+import static hein.auto_western_highway.common.utils.Blocks.copyBlock;
+import static hein.auto_western_highway.common.utils.Blocks.offsetBlock;
 import static hein.auto_western_highway.common.utils.Reflections.getMethod;
 
 public class DetermineStepFunction {
@@ -45,9 +46,6 @@ public class DetermineStepFunction {
         try {
             for (int i = 0; i < Constants.FUTURE_STEPS; i++) {
                 futurePosition = offsetBlock(futurePosition, -i, 0, 0);
-                if (!getBlocksNameFromBlockPositions(List.of(futurePosition)).contains("air")) {
-                    break;
-                }
                 StepHeight tempReverseStepHeight = (StepHeight) getMethod("common.building." + reverseDirection(direction), String.format("getStep%sHeight", reverseDirection(direction)), futurePosition.getClass()).invoke(null, futurePosition);
                 if (tempReverseStepHeight.count > reverseStepHeight.count) {
                     reverseStepHeight = tempReverseStepHeight;
