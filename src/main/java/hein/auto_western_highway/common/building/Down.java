@@ -33,9 +33,9 @@ public class Down {
                     rayDownBlocks.get(step * 3 + 2)
             );
             // on the 0-th step, ignore the block we are standing on
-            if (step == 0 && isNonTerrainBlock(blocks.get(1)) && isNonTerrainBlock(blocks.get(2))) {
+            if (step == 0 && pathingIgnoreBlocks(blocks.get(1)) && pathingIgnoreBlocks(blocks.get(2))) {
                 stepHeight.count += 1;
-            } else if (blocks.stream().allMatch(Blocks::isNonTerrainBlock)) {
+            } else if (blocks.stream().allMatch(Blocks::pathingIgnoreBlocks)) {
                 stepHeight.count += 1;
             } else {
                 break;

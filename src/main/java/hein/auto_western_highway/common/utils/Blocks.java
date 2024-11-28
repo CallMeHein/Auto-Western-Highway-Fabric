@@ -68,7 +68,7 @@ public class Blocks {
         return blocknamesAndStates;
     }
 
-    public static boolean isNonTerrainBlock(String block) {
+    public static boolean pathingIgnoreBlocks(String block) {
         return Stream.of(
                 "_log",
                 "air",
@@ -81,6 +81,7 @@ public class Blocks {
                 "lilac",
                 "lily_pad",
                 "moss",
+                "mushroom",
                 "nether",
                 "obsidian",
                 "poppy",

@@ -26,7 +26,7 @@ public class Up {
         StepHeight stepHeight = new StepHeight(
                 0,
                 rayUpBlocks.stream().anyMatch(Blocks::isScaffoldBlockingBlock));
-        if (rayUpBlocks.stream().allMatch(Blocks::isNonTerrainBlock)) {
+        if (rayUpBlocks.stream().allMatch(Blocks::pathingIgnoreBlocks)) {
             stepHeight.count = 0;
             stepHeight.containsScaffoldBlockingBlocks = false;
             return stepHeight;
@@ -38,7 +38,7 @@ public class Up {
                     rayUpBlocks.get(step * 3 + 1),
                     rayUpBlocks.get(step * 3 + 2)
             );
-            if (blocks.stream().allMatch(Blocks::isNonTerrainBlock)) {
+            if (blocks.stream().allMatch(Blocks::pathingIgnoreBlocks)) {
                 stepHeight.count += 1;
             } else {
                 break;
