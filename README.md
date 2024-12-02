@@ -57,8 +57,6 @@ Put the schematics from ./schematics into your baritone's schematic folder (defa
 
 ## TODO
 
-- multiple status messages at once, all toggleable
-    - more status messages than just the current build target
 - a cleaner way to break shulkers, right now we just hope the server accepts any of our packets
 - any way to pick up the shulker item after breaking it if it somehow falls out of instant pickup range?
 - prevent it from closing chat/inventory/menu/map when it's just building (?)

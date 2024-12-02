@@ -58,10 +58,18 @@ public class InventoryManagement {
         }
         while (true) {
             items = new ArrayList<>(globalPlayerNonNull.get().getInventory().main);
-            ArrayList<ItemStack> shulkers = new ArrayList<>(items.stream().filter(item -> (item.getItem() instanceof BlockItem) && getBlockId(item.getItem()).equals("shulker_box")).toList());
-            shulkers.sort(Comparator.comparingInt(shulker -> getRelevantItemCount((ItemStack) shulker)).reversed());
+
+            ArrayList<ItemStack> shulkers = new ArrayList<>(items.stream()
+                    .filter(item ->
+                            (item.getItem() instanceof BlockItem) &&
+                                    getBlockId(item.getItem()).equals("shulker_box") &&
+                                    getRelevantItemStacksCount(item) > 0
+                    ).toList());
+
+            shulkers.sort(Comparator.comparingInt(InventoryManagement::getRelevantItemStacksCount));
+
             // if we have no shulkers with needed items, we're done replenishing
-            if (shulkers.isEmpty() || getRelevantItemCount(shulkers.get(0)) == 0) {
+            if (shulkers.isEmpty()) {
                 break;
             }
             // if all materials are above the replenish target threshold, we've successfully replenished
@@ -208,17 +216,17 @@ public class InventoryManagement {
         }
     }
 
-    private static int getRelevantItemCount(ItemStack shulker) {
+    private static int getRelevantItemStacksCount(ItemStack shulker) {
         List<String> shulkerItems = invokeVersionSpecific("GetItemIdsInShulker", "getItemIdsInShulker", shulker);
-        List<String> foundRelevantItems = new ArrayList<>();
-        shulkerItems.forEach(itemId -> {
+        int relevantCount = 0;
+        for (String itemId : shulkerItems) {
             for (ResourceLoadout resource : getLowMaterials()) {
-                if (resource.block.equals(itemId) && !foundRelevantItems.contains(resource.block)) {
-                    foundRelevantItems.add(resource.block);
+                if (resource.block.equals(itemId)) {
+                    relevantCount += 1;
                 }
             }
-        });
-        return foundRelevantItems.size();
+        }
+        return relevantCount;
     }
 
     public static void swapItem(ItemStack item, int sourceSlot, int targetSlot) {
