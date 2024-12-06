@@ -57,10 +57,11 @@ Put the schematics from ./schematics into your baritone's schematic folder (defa
 
 ## TODO
 
+- prevent crashing into a cliff/cave and stepping up step by step afterwards
 - a cleaner way to break shulkers, right now we just hope the server accepts any of our packets
+    - break shulker via baritone cleararea?
 - any way to pick up the shulker item after breaking it if it somehow falls out of instant pickup range?
 - prevent it from closing chat/inventory/menu/map when it's just building (?)
-- scaffolding sometimes gets stuck, fix that
 - let the player queue certain commands at a certain x-coordinate
     - something like /forceAutoWesternHighway {x} STEP_UP 10
     - this lets us scout ahead with freecam to catch/prevent known issues with the current pathing system like crashing

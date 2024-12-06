@@ -115,7 +115,7 @@ public class InventoryManagement {
             }
             assert itemStackWithTargetItem.getItem() instanceof BlockItem; // we only deal with blocks when we set our hotbar, so the target item will always be instanceof BlockItem
 
-            if (!(itemInHotbarAtPreferredSlot.getItem() instanceof BlockItem) || // the item is not a block (it def can't be the correct item)
+            if (!(itemInHotbarAtPreferredSlot.getItem() instanceof BlockItem) || // the item in our hotbar is not a block (it def can't be the correct item)
                     !getBlockId((itemInHotbarAtPreferredSlot.getItem())).equals(getBlockId((itemStackWithTargetItem.getItem()))) || // OR it is a block that is not the correct item
                     getBlockId(itemInHotbarAtPreferredSlot.getItem()).equals(getBlockId((itemStackWithTargetItem.getItem()))) && // OR ( it is the correct item,
                             itemInHotbarAtPreferredSlot.getCount() < itemStackWithTargetItem.getCount() // AND has a lower count than another stack in our inv)
