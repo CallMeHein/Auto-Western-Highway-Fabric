@@ -1,13 +1,19 @@
 package hein.auto_western_highway.common.building;
 
 import baritone.api.BaritoneAPI;
+import baritone.api.pathing.goals.GoalBlock;
+import baritone.api.process.IBuilderProcess;
+import baritone.api.utils.BetterBlockPos;
 import hein.auto_western_highway.common.types.ResourceLoadout;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
@@ -15,20 +21,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.screen.slot.ShulkerBoxSlot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import static hein.auto_western_highway.common.AutoWesternHighway.stopAutoWesternHighway;
 import static hein.auto_western_highway.common.Globals.*;
@@ -46,18 +51,19 @@ import static net.minecraft.util.Hand.MAIN_HAND;
 public class InventoryManagement {
 
     public static void replenishItemsIfNeeded() {
-        if (globalPlayerNonNull.get().getPos().getY() % 1 != 0) {
+        ClientPlayerEntity player = globalPlayerNonNull.get();
+        if (player.getPos().getY() % 1 != 0) {
             return; // surely this will never cause us to run out of materials
         }
         resetInventoryLoadout();
 
-        ArrayList<ItemStack> items = new ArrayList<>(globalPlayerNonNull.get().getInventory().main);
+        ArrayList<ItemStack> items = new ArrayList<>(player.getInventory().main);
         countMaterials(items);
         if (getLowMaterials().isEmpty()) {
             return;
         }
         while (true) {
-            items = new ArrayList<>(globalPlayerNonNull.get().getInventory().main);
+            items = new ArrayList<>(player.getInventory().main);
 
             ArrayList<ItemStack> shulkers = new ArrayList<>(items.stream()
                     .filter(item ->
@@ -76,24 +82,30 @@ public class InventoryManagement {
             if (getUnfilledMaterials().isEmpty()) {
                 break;
             }
-            placeShulker(shulkers.get(0), items);
-            extractItems();
+            BlockPos shulkerPos = getStandingBlock(player);
+            placeShulker(shulkerPos, player, shulkers.get(0), items);
+            extractItems(player);
             globalClient.get().execute(() -> {
                 globalClient.get().setScreen(null);
-                globalPlayerNonNull.get().closeHandledScreen();
+                player.closeHandledScreen();
             });
             // wait for shulker to fully close
-            waitUntilTrue(() -> getPlayerFeetBlock(globalPlayerNonNull.get()).getY() == globalPlayerNonNull.get().getPos().getY());
+            waitUntilTrue(() -> getPlayerFeetBlock(player).getY() == player.getPos().getY());
 
-            int shulkerCount = getShulkerCount();
-            breakBlock(getStandingBlock(globalPlayerNonNull.get()));
-            waitUntilTrue(() -> getShulkerCount() > shulkerCount);
+            int shulkerCount = getShulkerCount(player);
+            breakShulker(new BetterBlockPos(offsetBlock(shulkerPos, 0, 1, 0)));
+            sleep(500); // await potential instant pickup
+            if (getShulkerCount(player) == shulkerCount) { // shulkerCount has not changed because the shulker fell out of range and was not picked up
+                pickupShulker();
+                waitUntilTrue(() -> getShulkerCount(player) > shulkerCount); // Baritone's API is async, so we manually wait until it is picked up
+            }
+            sleep(200);
         }
         globalHudRenderer.inventoryManagementMessage = null;
     }
 
-    private static int getShulkerCount() {
-        return globalPlayerNonNull.get().getInventory().main
+    private static int getShulkerCount(ClientPlayerEntity player) {
+        return player.getInventory().main
                 .stream().filter(item ->
                         item.getItem() instanceof BlockItem &&
                                 getBlockId(item.getItem()).equals("shulker_box")).toList().size();
@@ -138,9 +150,9 @@ public class InventoryManagement {
         });
     }
 
-    private static void extractItems() {
-        waitUntilTrue(() -> globalPlayerNonNull.get().currentScreenHandler instanceof ShulkerBoxScreenHandler);
-        ScreenHandler screen = globalPlayerNonNull.get().currentScreenHandler;
+    private static void extractItems(ClientPlayerEntity player) {
+        waitUntilTrue(() -> player.currentScreenHandler instanceof ShulkerBoxScreenHandler);
+        ScreenHandler screen = player.currentScreenHandler;
         Inventory shulkerInventory = screen.slots.stream().filter(slot -> slot instanceof ShulkerBoxSlot).findFirst().orElseThrow().inventory;
         for (int shulkerSlotId = 0; shulkerSlotId < shulkerInventory.size(); shulkerSlotId++) {
             ItemStack item = shulkerInventory.getStack(shulkerSlotId);
@@ -159,35 +171,34 @@ public class InventoryManagement {
         }
     }
 
-    private static void placeShulker(ItemStack shulker, ArrayList<ItemStack> items) {
+    private static void placeShulker(BlockPos position, ClientPlayerEntity player, ItemStack shulker, ArrayList<ItemStack> items) {
         globalHudRenderer.inventoryManagementMessage = "Placing Shulker";
         BaritoneAPI.getSettings().buildIgnoreBlocks.value = new ArrayList<>();
         BaritoneAPI.getSettings().layerOrder.value = false;
-        build(CLEAR_PLAYER_SPACE, offsetBlock(getPlayerFeetBlock(globalPlayerNonNull.get()), -1, 1, -1));
+        build(CLEAR_PLAYER_SPACE, offsetBlock(getPlayerFeetBlock(player), -1, 1, -1));
         resetSettings();
         int shulkerSlot = items.indexOf(shulker);
         // slot index does not match slot id when the inventory is open, so we add the needed amount to the id
         moveItem(shulker, shulkerSlot <= 8 ? shulkerSlot + 36 : shulkerSlot, 8 + 36, true);
-        ClientPlayerEntity player = globalPlayer.get();
-        assert player != null;
         player.getInventory().selectedSlot = 8;
 
-        BlockPos position = getStandingBlock(player);
+        globalHudRenderer.inventoryManagementMessage = "Placing Shulker";
         player.jump();
-        while (!getBlocksNameFromBlockPositions(List.of(getStandingBlock(player))).get(0).equals("shulker_box")) {
-            rightClick(position); // place
+        while (!getBlocksNameFromBlockPositions(List.of(copyBlock(position, 0, 1, 0))).get(0).equals("shulker_box")) {
+            rightClick(position, player); // place
             sleep(50);
         }
+        globalHudRenderer.inventoryManagementMessage = "Opening Shulker";
         position = position.offset(Direction.Axis.Y, 1);
-        rightClick(position); // open
+        rightClick(position, player); // open
         waitUntilTrue(() -> globalClient.get().currentScreen instanceof ShulkerBoxScreen);
     }
 
-    private static void rightClick(BlockPos position) {
+    private static void rightClick(BlockPos position, ClientPlayerEntity player) {
         ClientPlayerInteractionManager interactionManager = globalClient.get().interactionManager;
         assert interactionManager != null;
         globalClient.get().execute(() ->
-                interactionManager.interactBlock(globalPlayerNonNull.get(), MAIN_HAND, new BlockHitResult(
+                interactionManager.interactBlock(player, MAIN_HAND, new BlockHitResult(
                         Vec3d.ofCenter(position),
                         Direction.UP,
                         position,
@@ -195,23 +206,42 @@ public class InventoryManagement {
                 )));
     }
 
-    private static void breakBlock(BlockPos position) {
+    private static void breakShulker(BetterBlockPos position) {
         globalHudRenderer.inventoryManagementMessage = "Breaking Shulker";
-        ClientPlayerInteractionManager interactionManager = globalClient.get().interactionManager;
-        assert interactionManager != null;
-        while (getBlocksNameFromBlockPositions(List.of(position)).stream().findFirst().orElseThrow().equals("shulker_box")) {
-            CountDownLatch latch = new CountDownLatch(1);
-            globalClient.get().execute(() -> {
-                interactionManager.attackBlock(position, Direction.UP);
-                sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, position, Direction.UP));
-                latch.countDown();
-            });
-            try {
-                latch.await(); // we don't want to sleep within client.execute() because it freezes the entire game, so we do the workaround with Latch
-                sleep(1000);
-                sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, position, Direction.UP));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        try {
+            IBuilderProcess builderProcess = BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess();
+            builderProcess.clearArea(position, position);
+            waitUntilTrue(() -> !builderProcess.isActive());
+        } catch (
+                IllegalArgumentException ignored) { // baritone sometimes conflicts between BetterBlockPos and BlockPos, does not actually affect the script
+        }
+    }
+
+    private static void pickupShulker() {
+        MinecraftClient client = globalClient.get();
+        assert client != null;
+        assert client.world != null;
+        assert client.interactionManager != null;
+        ClientPlayerEntity player = globalPlayerNonNull.get();
+
+        Vec3d playerPos = player.getPos();
+        Box searchBox = new Box(playerPos.subtract(10, 10, 10), playerPos.add(10, 10, 10));
+
+        for (Entity entity : client.world.getEntitiesByClass(ItemEntity.class, searchBox, e -> true)) {
+            if (entity instanceof ItemEntity itemEntity && itemEntity.toString().contains("Shulker Box")) {
+                Vec3d prevXYZ = null;
+                ItemEntity targetEntity;
+                // wait for shulker item to stop moving
+                while (true) {
+                    targetEntity = (ItemEntity) client.world.getEntityById(itemEntity.getId());
+                    assert targetEntity != null;
+                    if (prevXYZ != null && prevXYZ.equals(new Vec3d(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ()))) {
+                        break;
+                    }
+                    prevXYZ = new Vec3d(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
+                    sleep(500);
+                }
+                BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalBlock(itemEntity.getBlockPos()));
             }
         }
     }
