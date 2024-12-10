@@ -76,6 +76,7 @@ public class Blocks {
                 "dandelion",
                 "dead_bush",
                 "fern",
+                "fire",
                 "flower",
                 "leaves",
                 "lilac",
