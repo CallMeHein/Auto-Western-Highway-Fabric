@@ -43,8 +43,7 @@ import static hein.auto_western_highway.common.types.AutoHighwaySchematic.CLEAR_
 import static hein.auto_western_highway.common.types.InventoryLoadout.*;
 import static hein.auto_western_highway.common.utils.Blocks.*;
 import static hein.auto_western_highway.common.utils.Reflections.invokeVersionSpecific;
-import static hein.auto_western_highway.common.utils.Wait.sleep;
-import static hein.auto_western_highway.common.utils.Wait.waitUntilTrue;
+import static hein.auto_western_highway.common.utils.Wait.*;
 import static net.minecraft.screen.slot.SlotActionType.*;
 import static net.minecraft.util.Hand.MAIN_HAND;
 
@@ -94,8 +93,8 @@ public class InventoryManagement {
 
             int shulkerCount = getShulkerCount(player);
             breakShulker(new BetterBlockPos(offsetBlock(shulkerPos, 0, 1, 0)));
-            sleep(500); // await potential instant pickup
-            if (getShulkerCount(player) == shulkerCount) { // shulkerCount has not changed because the shulker fell out of range and was not picked up
+            boolean immediatelyPickedUp = waitUntilTrueWithTimeout(() -> getShulkerCount(player) != shulkerCount, 250, 1500); // await potential immediate pickup
+            if (!immediatelyPickedUp) {
                 pickupShulker();
                 waitUntilTrue(() -> getShulkerCount(player) > shulkerCount); // Baritone's API is async, so we manually wait until it is picked up
             }
