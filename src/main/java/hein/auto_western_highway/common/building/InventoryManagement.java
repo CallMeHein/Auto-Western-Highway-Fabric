@@ -93,6 +93,7 @@ public class InventoryManagement {
 
             int shulkerCount = getShulkerCount(player);
             breakShulker(new BetterBlockPos(offsetBlock(shulkerPos, 0, 1, 0)));
+            BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalBlock(offsetBlock(shulkerPos, 0, 1, 0)));
             boolean immediatelyPickedUp = waitUntilTrueWithTimeout(() -> getShulkerCount(player) != shulkerCount, 250, 1500); // await potential immediate pickup
             if (!immediatelyPickedUp) {
                 pickupShulker();
