@@ -43,6 +43,14 @@ Put the schematics from ./schematics into your baritone's schematic folder (defa
   replenish from
   shulkers (flowers, grass, leaves, logs, ...)
 
+### Suggested loadout
+
+Recommended loadout is
+- 8 shulkers smooth stone
+- 12 shulkers stone bricks
+- 1 shulker smooth stone slabs
+- 2 shulkers stone brick slabs
+
 ## Troubleshooting
 
 ### Gets stuck while placing blocks
