@@ -5,10 +5,10 @@ import java.util.List;
 public class InventoryLoadout {
     // The loadout we force on the user
     public static final List<ResourceLoadout> inventoryLoadout = List.of(
-            new ResourceLoadout("stone_bricks", 40, 65, 5),
-            new ResourceLoadout("stone_brick_slab", 40, 65, 6),
-            new ResourceLoadout("smooth_stone", 40, 65, 7),
-            new ResourceLoadout("smooth_stone_slab", 40, 65, 8)
+            new ResourceLoadout("stone_bricks", 10, 65, 5),
+            new ResourceLoadout("stone_brick_slab", 10, 65, 6),
+            new ResourceLoadout("smooth_stone", 10, 65, 7),
+            new ResourceLoadout("smooth_stone_slab", 10, 65, 8)
     );
 
     public static void resetInventoryLoadout() {
