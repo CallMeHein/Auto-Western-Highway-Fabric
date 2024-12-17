@@ -3,6 +3,8 @@ package hein.auto_western_highway.common.building;
 import hein.auto_western_highway.common.types.StepFunctionWithCount;
 import net.minecraft.util.math.BlockPos;
 
+import java.lang.reflect.InvocationTargetException;
+
 import static hein.auto_western_highway.common.utils.Blocks.offsetBlock;
 import static hein.auto_western_highway.common.utils.Reflections.getMethod;
 

@@ -3,6 +3,7 @@ package hein.auto_western_highway.common.building;
 import net.minecraft.util.math.BlockPos;
 
 import static hein.auto_western_highway.common.Globals.globalHudRenderer;
+import static hein.auto_western_highway.common.NightLogout.nightLogout;
 import static hein.auto_western_highway.common.building.InventoryManagement.replenishItemsIfNeeded;
 import static hein.auto_western_highway.common.building.InventoryManagement.setHotbarToInventoryLoadout;
 import static hein.auto_western_highway.common.types.AutoHighwaySchematic.STEP;
@@ -21,6 +22,7 @@ public class Step {
             globalHudRenderer.setBuildMessage(String.format("Stepping %d block%s", count - i, count - i > 1 ? "s" : ""));
             Baritone.build(STEP, tempBuildOrigin.offset(X, -1).offset(Z, -1));
             tempBuildOrigin = tempBuildOrigin.offset(X, -1);
+            nightLogout();
         }
     }
 }

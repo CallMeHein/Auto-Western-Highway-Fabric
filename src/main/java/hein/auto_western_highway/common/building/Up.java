@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static hein.auto_western_highway.common.Globals.globalHudRenderer;
+import static hein.auto_western_highway.common.NightLogout.nightLogout;
 import static hein.auto_western_highway.common.building.Baritone.build;
 import static hein.auto_western_highway.common.building.Baritone.resetSettings;
 import static hein.auto_western_highway.common.building.InventoryManagement.replenishItemsIfNeeded;
@@ -68,6 +69,7 @@ public class Up {
             globalHudRenderer.setBuildMessage(String.format("Stepping up %d step%s", count - i, count - i > 1 ? "s" : ""));
             build(AutoHighwaySchematic.STEP_UP, copyBlock(tempBuildOrigin).offset(X, -2).offset(Z, -1));
             tempBuildOrigin = tempBuildOrigin.offset(X, -2).offset(Y, 1);
+            nightLogout();
         }
     }
 
@@ -83,6 +85,7 @@ public class Up {
             globalHudRenderer.setBuildMessage(String.format("Scaffolding up %d step%s", stepUpHeight.count - i, stepUpHeight.count - i > 1 ? "s" : ""));
             build(AutoHighwaySchematic.STEP_SCAFFOLD, copyBlock(buildOrigin).offset(X, -3).offset(Y, 1));
             buildOrigin = offsetBlock(buildOrigin, -2, 1, 0);
+            nightLogout();
         }
         resetSettings();
     }

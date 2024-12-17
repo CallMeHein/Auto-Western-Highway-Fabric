@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static hein.auto_western_highway.common.Globals.globalHudRenderer;
+import static hein.auto_western_highway.common.NightLogout.nightLogout;
 import static hein.auto_western_highway.common.building.Baritone.*;
 import static hein.auto_western_highway.common.building.InventoryManagement.replenishItemsIfNeeded;
 import static hein.auto_western_highway.common.building.InventoryManagement.setHotbarToInventoryLoadout;
@@ -66,6 +67,7 @@ public class Down {
             build(STEP_DOWN, copyBlock(tempBuildOrigin, -1, -1, -1));
             build(STEP, copyBlock(tempBuildOrigin, -2, -2, -1));
             tempBuildOrigin = offsetBlock(tempBuildOrigin, -2, -1, 0);
+            nightLogout();
         }
     }
 
@@ -84,6 +86,7 @@ public class Down {
             settings.buildIgnoreExisting.value = !blocks.contains("water");
             build(STEP_SCAFFOLD, copyBlock(preScaffoldBuildOrigin));
             preScaffoldBuildOrigin = offsetBlock(preScaffoldBuildOrigin, -2, 0, 0);
+            nightLogout();
         }
         settings.buildIgnoreExisting.value = !stepDownHeight.containsScaffoldBlockingBlocks;
         int scaffoldSteps = stepDownHeight.count + 1;
@@ -93,6 +96,7 @@ public class Down {
             globalHudRenderer.setBuildMessage(String.format("Scaffolding down %d step%s", scaffoldSteps - i, scaffoldSteps - i > 1 ? "s" : ""));
             build(STEP_SCAFFOLD, copyBlock(buildOrigin, -2 * scaffoldSteps, -scaffoldSteps, 0));
             buildOrigin = offsetBlock(buildOrigin, 2, 1, 0);
+            nightLogout();
         }
         resetSettings();
     }

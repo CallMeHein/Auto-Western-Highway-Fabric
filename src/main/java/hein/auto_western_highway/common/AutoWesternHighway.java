@@ -17,7 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import java.util.List;
 
 import static hein.auto_western_highway.common.Globals.*;
-import static hein.auto_western_highway.common.NightLogout.nightLogout;
 import static hein.auto_western_highway.common.building.Baritone.resetSettings;
 import static hein.auto_western_highway.common.building.DetermineStepFunction.determineStepFunction;
 import static hein.auto_western_highway.common.building.Movement.adjustStandingBlock;
@@ -83,7 +82,6 @@ public class AutoWesternHighway implements ModInitializer {
                     }
                     stepFunction.stepFunction.invoke(null, standingBlock, stepFunction.stepHeight.count);
                     standingBlock = adjustStandingBlock(standingBlock, stepFunction);
-                    nightLogout();
                 }
             } catch (Exception e) {
                 stopAutoWesternHighway();
