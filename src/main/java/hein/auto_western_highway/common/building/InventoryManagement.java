@@ -6,6 +6,7 @@ import baritone.api.process.IBuilderProcess;
 import baritone.api.utils.BetterBlockPos;
 import hein.auto_western_highway.common.types.ResourceLoadout;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
@@ -181,6 +182,7 @@ public class InventoryManagement {
         // slot index does not match slot id when the inventory is open, so we add the needed amount to the id
         moveItem(shulker, shulkerSlot <= 8 ? shulkerSlot + 36 : shulkerSlot, 8 + 36, true);
         player.getInventory().selectedSlot = 8;
+        waitUntilTrue(() -> player.getInventory().getMainHandStack().getItem() instanceof BlockItem && ((BlockItem)player.getInventory().getMainHandStack().getItem()).getBlock() instanceof ShulkerBoxBlock);
 
         globalHudRenderer.setInventoryManagementMessage("Placing shulker");
         player.jump();
