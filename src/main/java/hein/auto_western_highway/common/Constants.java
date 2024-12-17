@@ -25,6 +25,7 @@ public class Constants {
             LILAC,
             LILY_OF_THE_VALLEY,
             MANGROVE_LOG,
+            NETHER_PORTAL,
             ORANGE_TULIP,
             OXEYE_DAISY,
             PEONY,
