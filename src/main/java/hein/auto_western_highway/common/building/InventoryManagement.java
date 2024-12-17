@@ -99,7 +99,7 @@ public class InventoryManagement {
             if (!immediatelyPickedUp) {
                 pickupShulker(shulkerCount);
             }
-            sleep(200);
+            sleep(500);
         }
         globalHudRenderer.setInventoryManagementMessage(null);
     }
@@ -165,7 +165,7 @@ public class InventoryManagement {
                 if (resource.block.equals(itemId)) {
                     clickSlot(item, shulkerSlotId, QUICK_MOVE);
                     addToInventoryLoadout(itemId, item.getCount());
-                    sleep(100); // allow inventory to update
+                    sleep(200); // allow inventory to update
                     break;
                 }
             }
@@ -190,6 +190,7 @@ public class InventoryManagement {
             rightClick(position, player); // place
             sleep(50);
         }
+        sleep(250);
         globalHudRenderer.setInventoryManagementMessage("Placing shulker DONE");
         globalHudRenderer.setInventoryManagementMessage("Opening shulker");
         position = position.offset(Direction.Axis.Y, 1);
