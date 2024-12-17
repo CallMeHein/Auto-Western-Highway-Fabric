@@ -65,10 +65,8 @@ Recommended loadout is
 
 ## TODO
 
+- continuously try to jump and place shulkers, not just once
 - prevent crashing into a cliff/cave and stepping up step by step afterwards
-- a cleaner way to break shulkers, right now we just hope the server accepts any of our packets
-    - break shulker via baritone cleararea?
-- any way to pick up the shulker item after breaking it if it somehow falls out of instant pickup range?
 - prevent it from closing chat/inventory/menu/map when it's just building (?)
 - let the player queue certain commands at a certain x-coordinate
     - something like /forceAutoWesternHighway {x} STEP_UP 10
