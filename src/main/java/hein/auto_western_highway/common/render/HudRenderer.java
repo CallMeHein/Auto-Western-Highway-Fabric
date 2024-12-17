@@ -13,8 +13,27 @@ import static hein.auto_western_highway.common.AutoWesternHighway.nightLogout;
 public class HudRenderer {
     public TextRenderer textRenderer;
 
-    public String buildMessage;
-    public String inventoryManagementMessage;
+    private String buildMessage;
+    private String prevBuildMessage;
+
+    private String inventoryManagementMessage;
+    private String  prevInventoryManagementMessage;
+
+    public void setBuildMessage(String buildMessage) {
+        if (buildMessage != null && !buildMessage.equals(prevBuildMessage)){
+            System.out.println(buildMessage);
+            prevBuildMessage = buildMessage;
+        }
+        this.buildMessage = buildMessage;
+    }
+
+    public void setInventoryManagementMessage(String inventoryManagementMessage) {
+        if (inventoryManagementMessage != null && !inventoryManagementMessage.equals(prevInventoryManagementMessage)){
+            System.out.println(inventoryManagementMessage);
+            prevInventoryManagementMessage = inventoryManagementMessage;
+        }
+        this.inventoryManagementMessage = inventoryManagementMessage;
+    }
 
     public void render(DrawContext drawContext) {
         if (this.textRenderer == null) {

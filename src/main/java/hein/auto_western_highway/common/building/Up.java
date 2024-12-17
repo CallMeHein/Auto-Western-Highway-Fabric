@@ -65,7 +65,7 @@ public class Up {
         for (int i = 0; i < count; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
-            globalHudRenderer.buildMessage = String.format("Stepping up %d step%s", count - i, count - i > 1 ? "s" : "");
+            globalHudRenderer.setBuildMessage(String.format("Stepping up %d step%s", count - i, count - i > 1 ? "s" : ""));
             build(AutoHighwaySchematic.STEP_UP, copyBlock(tempBuildOrigin).offset(X, -2).offset(Z, -1));
             tempBuildOrigin = tempBuildOrigin.offset(X, -2).offset(Y, 1);
         }
@@ -80,7 +80,7 @@ public class Up {
         for (int i = 0; i < stepUpHeight.count; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
-            globalHudRenderer.buildMessage = String.format("Scaffolding up %d step%s", stepUpHeight.count - i, stepUpHeight.count - i > 1 ? "s" : "");
+            globalHudRenderer.setBuildMessage(String.format("Scaffolding up %d step%s", stepUpHeight.count - i, stepUpHeight.count - i > 1 ? "s" : ""));
             build(AutoHighwaySchematic.STEP_SCAFFOLD, copyBlock(buildOrigin).offset(X, -3).offset(Y, 1));
             buildOrigin = offsetBlock(buildOrigin, -2, 1, 0);
         }

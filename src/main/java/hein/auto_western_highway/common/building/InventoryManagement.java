@@ -96,12 +96,11 @@ public class InventoryManagement {
             BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalBlock(offsetBlock(shulkerPos, 0, 1, 0)));
             boolean immediatelyPickedUp = waitUntilTrueWithTimeout(() -> getShulkerCount(player) != shulkerCount, 250, 1500); // await potential immediate pickup
             if (!immediatelyPickedUp) {
-                pickupShulker();
-                waitUntilTrue(() -> getShulkerCount(player) > shulkerCount); // Baritone's API is async, so we manually wait until it is picked up
+                pickupShulker(shulkerCount);
             }
             sleep(200);
         }
-        globalHudRenderer.inventoryManagementMessage = null;
+        globalHudRenderer.setInventoryManagementMessage(null);
     }
 
     private static int getShulkerCount(ClientPlayerEntity player) {
@@ -151,6 +150,7 @@ public class InventoryManagement {
     }
 
     private static void extractItems(ClientPlayerEntity player) {
+        globalHudRenderer.setInventoryManagementMessage("Extracting items from shulker");
         waitUntilTrue(() -> player.currentScreenHandler instanceof ShulkerBoxScreenHandler);
         ScreenHandler screen = player.currentScreenHandler;
         Inventory shulkerInventory = screen.slots.stream().filter(slot -> slot instanceof ShulkerBoxSlot).findFirst().orElseThrow().inventory;
@@ -169,10 +169,10 @@ public class InventoryManagement {
                 }
             }
         }
+        globalHudRenderer.setInventoryManagementMessage("Extracting items from shulker DONE");
     }
 
     private static void placeShulker(BlockPos position, ClientPlayerEntity player, ItemStack shulker, ArrayList<ItemStack> items) {
-        globalHudRenderer.inventoryManagementMessage = "Placing Shulker";
         BaritoneAPI.getSettings().buildIgnoreBlocks.value = new ArrayList<>();
         BaritoneAPI.getSettings().layerOrder.value = false;
         build(CLEAR_PLAYER_SPACE, offsetBlock(getPlayerFeetBlock(player), -1, 1, -1));
@@ -182,16 +182,18 @@ public class InventoryManagement {
         moveItem(shulker, shulkerSlot <= 8 ? shulkerSlot + 36 : shulkerSlot, 8 + 36, true);
         player.getInventory().selectedSlot = 8;
 
-        globalHudRenderer.inventoryManagementMessage = "Placing Shulker";
+        globalHudRenderer.setInventoryManagementMessage("Placing shulker");
         player.jump();
         while (!getBlocksNameFromBlockPositions(List.of(copyBlock(position, 0, 1, 0))).get(0).equals("shulker_box")) {
             rightClick(position, player); // place
             sleep(50);
         }
-        globalHudRenderer.inventoryManagementMessage = "Opening Shulker";
+        globalHudRenderer.setInventoryManagementMessage("Placing shulker DONE");
+        globalHudRenderer.setInventoryManagementMessage("Opening shulker");
         position = position.offset(Direction.Axis.Y, 1);
         rightClick(position, player); // open
         waitUntilTrue(() -> globalClient.get().currentScreen instanceof ShulkerBoxScreen);
+        globalHudRenderer.setInventoryManagementMessage("Opening shulker DONE");
     }
 
     private static void rightClick(BlockPos position, ClientPlayerEntity player) {
@@ -207,17 +209,19 @@ public class InventoryManagement {
     }
 
     private static void breakShulker(BetterBlockPos position) {
-        globalHudRenderer.inventoryManagementMessage = "Breaking Shulker";
+        globalHudRenderer.setInventoryManagementMessage("Breaking shulker");
         try {
             IBuilderProcess builderProcess = BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess();
             builderProcess.clearArea(position, position);
             waitUntilTrue(() -> !builderProcess.isActive());
+            globalHudRenderer.setInventoryManagementMessage("Breaking shulker DONE");
         } catch (
                 IllegalArgumentException ignored) { // baritone sometimes conflicts between BetterBlockPos and BlockPos, does not actually affect the script
         }
     }
 
-    private static void pickupShulker() {
+    private static void pickupShulker(int startingShulkerCount) {
+        globalHudRenderer.setInventoryManagementMessage("Picking up shulker");
         MinecraftClient client = globalClient.get();
         assert client != null;
         assert client.world != null;
@@ -242,6 +246,8 @@ public class InventoryManagement {
                     sleep(500);
                 }
                 BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalBlock(itemEntity.getBlockPos()));
+                waitUntilTrue(() -> getShulkerCount(player) > startingShulkerCount); // Baritone's API is async, so we manually wait until it is picked up
+                globalHudRenderer.setInventoryManagementMessage("Picking up shulker DONE");
             }
         }
     }

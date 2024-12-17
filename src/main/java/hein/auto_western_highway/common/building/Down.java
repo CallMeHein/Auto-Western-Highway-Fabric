@@ -62,7 +62,7 @@ public class Down {
         for (int i = 0; i < count; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
-            globalHudRenderer.buildMessage = String.format("Stepping down %d step%s", count - i, count - i > 1 ? "s" : "");
+            globalHudRenderer.setBuildMessage(String.format("Stepping down %d step%s", count - i, count - i > 1 ? "s" : ""));
             build(STEP_DOWN, copyBlock(tempBuildOrigin, -1, -1, -1));
             build(STEP, copyBlock(tempBuildOrigin, -2, -2, -1));
             tempBuildOrigin = offsetBlock(tempBuildOrigin, -2, -1, 0);
@@ -79,7 +79,7 @@ public class Down {
         for (int i = 0; i < stepDownHeight.count; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
-            globalHudRenderer.buildMessage = String.format("Pre-scaffolding down %d step%s", stepDownHeight.count - i, stepDownHeight.count - i > 1 ? "s" : "");
+            globalHudRenderer.setBuildMessage(String.format("Pre-scaffolding down %d step%s", stepDownHeight.count - i, stepDownHeight.count - i > 1 ? "s" : ""));
             List<String> blocks = Blocks.getBlocksNameFromBlockPositions(getSchematicBlockPositions(STEP_SCAFFOLD, preScaffoldBuildOrigin));
             settings.buildIgnoreExisting.value = !blocks.contains("water");
             build(STEP_SCAFFOLD, copyBlock(preScaffoldBuildOrigin));
@@ -90,7 +90,7 @@ public class Down {
         for (int i = 0; i < scaffoldSteps; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
-            globalHudRenderer.buildMessage = String.format("Scaffolding down %d step%s", scaffoldSteps - i, scaffoldSteps - i > 1 ? "s" : "");
+            globalHudRenderer.setBuildMessage(String.format("Scaffolding down %d step%s", scaffoldSteps - i, scaffoldSteps - i > 1 ? "s" : ""));
             build(STEP_SCAFFOLD, copyBlock(buildOrigin, -2 * scaffoldSteps, -scaffoldSteps, 0));
             buildOrigin = offsetBlock(buildOrigin, 2, 1, 0);
         }
