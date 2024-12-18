@@ -187,7 +187,23 @@ public class InventoryManagement {
         globalHudRenderer.setInventoryManagementMessage("Placing shulker");
 
         player.setPitch(90);
-        while (!getBlocksNameFromBlockPositions(List.of(copyBlock(position, 0, 1, 0))).get(0).equals("shulker_box")) {
+        while (true){
+            // once a shulker is detected, check for 10 contiunous ticks if it is actually there
+            if (getBlocksNameFromBlockPositions(List.of(copyBlock(position, 0, 1, 0))).get(0).equals("shulker_box")) {
+                int shulkerPlacedTicks = 0;
+                for (int i = 0 ; i < 10; i++){
+                    if (getBlocksNameFromBlockPositions(List.of(copyBlock(position, 0, 1, 0))).get(0).equals("shulker_box")){
+                        shulkerPlacedTicks++;
+                        System.out.println("shulkerPlacedTicks: " + shulkerPlacedTicks);
+                        sleep(50);
+                        continue;
+                    }
+                    break;
+                }
+                if (shulkerPlacedTicks == 10){
+                    break;
+                }
+            }
             if (player.isOnGround()){
                 player.jump();
             }
