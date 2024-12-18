@@ -182,13 +182,19 @@ public class InventoryManagement {
         // slot index does not match slot id when the inventory is open, so we add the needed amount to the id
         moveItem(shulker, shulkerSlot <= 8 ? shulkerSlot + 36 : shulkerSlot, 8 + 36, true);
         player.getInventory().selectedSlot = 8;
-        waitUntilTrue(() -> player.getInventory().getMainHandStack().getItem() instanceof BlockItem && ((BlockItem)player.getInventory().getMainHandStack().getItem()).getBlock() instanceof ShulkerBoxBlock);
+        waitUntilTrue(() -> player.getInventory().getMainHandStack().getItem() instanceof BlockItem && ((BlockItem) player.getInventory().getMainHandStack().getItem()).getBlock() instanceof ShulkerBoxBlock);
 
         globalHudRenderer.setInventoryManagementMessage("Placing shulker");
-        player.jump();
+
+        player.setPitch(90);
         while (!getBlocksNameFromBlockPositions(List.of(copyBlock(position, 0, 1, 0))).get(0).equals("shulker_box")) {
-            rightClick(position, player); // place
-            sleep(50);
+            if (player.isOnGround()){
+                player.jump();
+            }
+            else if (player.canPlaceOn(position, Direction.UP, player.getInventory().getMainHandStack())) {
+                rightClick(position, player);
+            }
+            sleep(25);
         }
         sleep(250);
         globalHudRenderer.setInventoryManagementMessage("Placing shulker DONE");

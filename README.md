@@ -65,7 +65,6 @@ Recommended loadout is
 
 ## TODO
 
-- continuously try to jump and place shulkers, not just once
 - prevent crashing into a cliff/cave and stepping up step by step afterwards
 - prevent it from closing chat/inventory/menu/map when it's just building (?)
 - let the player queue certain commands at a certain x-coordinate
