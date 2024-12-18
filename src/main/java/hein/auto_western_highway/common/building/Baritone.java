@@ -5,6 +5,7 @@ import baritone.api.Settings;
 import baritone.api.process.IBuilderProcess;
 import hein.auto_western_highway.common.types.AutoHighwaySchematic;
 import hein.auto_western_highway.common.utils.Blocks;
+import net.minecraft.item.Items;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
@@ -21,6 +22,9 @@ import static net.minecraft.block.Blocks.*;
 public class Baritone {
     public static void resetSettings() {
         Settings settings = BaritoneAPI.getSettings();
+        settings.allowBreak.value = true;
+        settings.allowPlace.value = false;
+        settings.acceptableThrowawayItems.value = new ArrayList<>(List.of(Items.SMOOTH_STONE));
         settings.breakFromAbove.value = true;
         settings.goalBreakFromAbove.value = true;
         settings.buildRepeat.value = new Vec3i(0, 0, 0);
@@ -28,12 +32,12 @@ public class Baritone {
         settings.buildInLayers.value = true;
         settings.layerOrder.value = true;
         settings.buildIgnoreExisting.value = false;
-        settings.blocksToDisallowBreaking.value = List.of(
+        settings.blocksToDisallowBreaking.value = new ArrayList<>(List.of(
                 SMOOTH_STONE,
                 SMOOTH_STONE_SLAB,
                 STONE_BRICKS,
                 STONE_BRICK_SLAB
-        );
+        ));
         settings.buildIgnoreBlocks.value = buildIgnoreBlocks;
     }
 

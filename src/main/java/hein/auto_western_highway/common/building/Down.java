@@ -78,6 +78,7 @@ public class Down {
         Settings settings = BaritoneAPI.getSettings();
 
         BlockPos preScaffoldBuildOrigin = copyBlock(buildOrigin, -2, -(stepDownHeight.count + 1), 0);
+        settings.allowPlace.value = true;
         for (int i = 0; i < stepDownHeight.count; i++) {
             replenishItemsIfNeeded();
             setHotbarToInventoryLoadout();
@@ -88,6 +89,7 @@ public class Down {
             preScaffoldBuildOrigin = offsetBlock(preScaffoldBuildOrigin, -2, 0, 0);
             nightLogout();
         }
+        settings.allowPlace.value = false;
         settings.buildIgnoreExisting.value = !stepDownHeight.containsScaffoldBlockingBlocks;
         int scaffoldSteps = stepDownHeight.count + 1;
         for (int i = 0; i < scaffoldSteps; i++) {

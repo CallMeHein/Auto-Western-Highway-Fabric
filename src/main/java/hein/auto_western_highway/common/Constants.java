@@ -2,6 +2,7 @@ package hein.auto_western_highway.common;
 
 import net.minecraft.block.Block;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static net.minecraft.block.Blocks.*;
@@ -11,7 +12,7 @@ public class Constants {
     public static final int MAX_RAY_STEPS = 100;
     public static final int FUTURE_STEPS = 3;
 
-    public static final List<Block> buildIgnoreBlocks = List.of(
+    public static final List<Block> buildIgnoreBlocks = new ArrayList<>(List.of(
             ALLIUM,
             AZURE_BLUET,
             BLUE_ORCHID,
@@ -46,5 +47,5 @@ public class Constants {
             WHEAT,
             WHITE_TULIP,
             WITHER_ROSE
-    );
+    ));
 }
