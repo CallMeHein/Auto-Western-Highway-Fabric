@@ -78,6 +78,12 @@ public class Up {
         BlockPos buildOrigin = copyBlock(standingBlock);
         buildOrigin = offsetBlock(buildOrigin, 0, -1, 0);
         Settings settings = BaritoneAPI.getSettings();
+
+        settings.buildIgnoreExisting.value = false;
+        settings.allowPlace.value = true;
+        build(AutoHighwaySchematic.STEP_SCAFFOLD, copyBlock(buildOrigin).offset(X,-3).offset(Y,1));
+        settings.allowPlace.value = false;
+
         settings.buildIgnoreExisting.value = !stepUpHeight.containsScaffoldBlockingBlocks;
         for (int i = 0; i < stepUpHeight.count; i++) {
             replenishItemsIfNeeded();
