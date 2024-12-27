@@ -17,14 +17,23 @@ public class SessionStatistics {
         startX = globalPlayerNonNull.get().getBlockPos().getX();
     }
 
+    public static String getSessionDurationString(){
+        Duration duration = Duration.ofSeconds(endTime - startTime);
+        return String.format("AWH session duration: %02d:%02d:%02d", duration.toHours(), duration.toMinutes() % 60, duration.toSeconds() % 60);
+    }
+
+    public static String getSessionProgressString(){
+        return String.format("AWH session progress: %s blocks (from X = %d to X = %d)", abs(endX - startX), startX, endX);
+    }
+
     public static void logSessionStatistics(){
         endTime = Instant.now().getEpochSecond();
         endX = globalPlayerNonNull.get().getBlockPos().getX();
-        Duration duration = Duration.ofSeconds(endTime - startTime);
-        String sessionDuration = String.format("AutoWesternHighway session duration: %02d:%02d:%02d", duration.toHours(), duration.toMinutes() % 60, duration.toSeconds() % 60);
-        System.out.println(sessionDuration) ;
-        String sessionProgress = String.format("AutoWesternHighway session progress: %s blocks (from X = %d to X = %d)", abs(endX - startX), startX, endX);
-        System.out.println(sessionProgress);
+        System.out.println(getSessionDurationString()) ;
+        System.out.println(getSessionProgressString());
+    }
+
+    public static void resetSessionStatistics(){
         startTime = 0;
         endTime = 0;
     }

@@ -16,9 +16,8 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
-import static hein.auto_western_highway.common.SessionStatistics.logSessionStatistics;
-import static hein.auto_western_highway.common.SessionStatistics.startSessionStatistics;
 import static hein.auto_western_highway.common.Globals.*;
+import static hein.auto_western_highway.common.SessionStatistics.*;
 import static hein.auto_western_highway.common.building.Baritone.resetSettings;
 import static hein.auto_western_highway.common.building.DetermineStepFunction.determineStepFunction;
 import static hein.auto_western_highway.common.building.Movement.adjustStandingBlock;
@@ -73,6 +72,7 @@ public class AutoWesternHighway implements ModInitializer {
             sendStatusMessage("Stopping autoWesternHighway...");
             running = false;
             logSessionStatistics();
+            resetSessionStatistics();
         }
     }
 
