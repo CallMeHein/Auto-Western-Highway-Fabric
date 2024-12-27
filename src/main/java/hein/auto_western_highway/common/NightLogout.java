@@ -10,6 +10,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import static hein.auto_western_highway.common.AutoWesternHighway.nightLogout;
+import static hein.auto_western_highway.common.SessionStatistics.logSessionStatistics;
+import static hein.auto_western_highway.common.SessionStatistics.startSessionStatistics;
 import static hein.auto_western_highway.common.Globals.*;
 import static hein.auto_western_highway.common.utils.Blocks.getPlayerFeetBlock;
 import static hein.auto_western_highway.common.utils.Wait.sleep;
@@ -33,11 +35,11 @@ public class NightLogout {
             waitUntilTrue(builderProcess::isPaused);
 
             BlockPos logoutPos = getPlayerFeetBlock(globalPlayerNonNull.get());
+            logSessionStatistics();
 
             ClientConnection connection = globalClient.get().getNetworkHandler().getConnection();
             connection.send(new DisconnectS2CPacket(Text.literal("AWH: Disconnected to avoid the night - waiting for Meteor to reconnect")));
             connection.disconnect(Text.literal("AWH: Disconnected to avoid the night - waiting for Meteor to reconnect"));
-
             sleep(3_000);
             waitUntilTrue(() -> {
                 ClientPlayerEntity _player = globalPlayer.get();
@@ -47,6 +49,7 @@ public class NightLogout {
             }, 2_000);
             sleep(3_000);
             builderProcess.resume();
+            startSessionStatistics();
         }
     }
 }

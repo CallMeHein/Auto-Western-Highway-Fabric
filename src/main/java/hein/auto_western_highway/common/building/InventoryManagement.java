@@ -4,6 +4,7 @@ import baritone.api.BaritoneAPI;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.process.IBuilderProcess;
 import baritone.api.utils.BetterBlockPos;
+import hein.auto_western_highway.common.AutoWesternHighway;
 import hein.auto_western_highway.common.types.ResourceLoadout;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -122,7 +123,10 @@ public class InventoryManagement {
                     .orElse(null);
             // if we don't have any ItemStacks of the target item in our inventory, we're done because we would have restocked from shulkers before this
             if (itemStackWithTargetItem == null) {
-                stopAutoWesternHighway();
+                if (!AutoWesternHighway.stopping) {
+                    AutoWesternHighway.stopping = true;
+                    stopAutoWesternHighway();
+                }
                 return;
             }
             assert itemStackWithTargetItem.getItem() instanceof BlockItem; // we only deal with blocks when we set our hotbar, so the target item will always be instanceof BlockItem

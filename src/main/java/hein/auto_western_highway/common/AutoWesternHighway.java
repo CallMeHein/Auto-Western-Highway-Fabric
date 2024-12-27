@@ -16,6 +16,8 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
+import static hein.auto_western_highway.common.SessionStatistics.logSessionStatistics;
+import static hein.auto_western_highway.common.SessionStatistics.startSessionStatistics;
 import static hein.auto_western_highway.common.Globals.*;
 import static hein.auto_western_highway.common.building.Baritone.resetSettings;
 import static hein.auto_western_highway.common.building.DetermineStepFunction.determineStepFunction;
@@ -28,6 +30,7 @@ public class AutoWesternHighway implements ModInitializer {
     public static boolean running = false;
     public static boolean displayFuturePath = true;
     public static boolean nightLogout = false;
+    public static boolean stopping = false;
     private static Thread scriptThread;
     private static Thread futurePathThread;
     private static boolean displayStatus = true;
@@ -46,6 +49,8 @@ public class AutoWesternHighway implements ModInitializer {
             sendStatusMessage("Script is already running, stop it with /stopAutoWesternHighway");
             return;
         }
+        stopping = false;
+        startSessionStatistics();
         // start the script in a separate thread - this prevents freezing the game whenever we sleep the thread
         scriptThread = new Thread(() -> {
             resetSettings();
@@ -67,6 +72,7 @@ public class AutoWesternHighway implements ModInitializer {
             BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
             sendStatusMessage("Stopping autoWesternHighway...");
             running = false;
+            logSessionStatistics();
         }
     }
 
@@ -84,7 +90,10 @@ public class AutoWesternHighway implements ModInitializer {
                     standingBlock = adjustStandingBlock(standingBlock, stepFunction);
                 }
             } catch (Exception e) {
-                stopAutoWesternHighway();
+                if (!stopping) {
+                    stopping = true;
+                    stopAutoWesternHighway();
+                }
                 throw new RuntimeException(e);
             }
         }
@@ -111,7 +120,10 @@ public class AutoWesternHighway implements ModInitializer {
             // stop main script
             dispatcher.register(ClientCommandManager.literal("stopAutoWesternHighway").executes(context -> {
                 if (running) {
-                    stopAutoWesternHighway();
+                    if (!stopping) {
+                        stopping = true;
+                        stopAutoWesternHighway();
+                    }
                     return 1;
                 }
                 return 0;

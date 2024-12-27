@@ -31,8 +31,4 @@ public class Wait {
         }
         return false;
     }
-
-    public static boolean waitUntilTrueWithTimeout(Supplier<Boolean> condition, int timeoutMs) {
-        return waitUntilTrueWithTimeout(condition, 200, timeoutMs);
-    }
 }
