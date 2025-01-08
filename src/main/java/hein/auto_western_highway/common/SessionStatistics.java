@@ -18,17 +18,17 @@ public class SessionStatistics {
     }
 
     public static String getSessionDurationString(){
+        endTime = Instant.now().getEpochSecond();
         Duration duration = Duration.ofSeconds(endTime - startTime);
         return String.format("AWH session duration: %02d:%02d:%02d", duration.toHours(), duration.toMinutes() % 60, duration.toSeconds() % 60);
     }
 
     public static String getSessionProgressString(){
+        endX = globalPlayerNonNull.get().getBlockPos().getX();
         return String.format("AWH session progress: %s blocks (from X = %d to X = %d)", abs(endX - startX), startX, endX);
     }
 
     public static void logSessionStatistics(){
-        endTime = Instant.now().getEpochSecond();
-        endX = globalPlayerNonNull.get().getBlockPos().getX();
         System.out.println(getSessionDurationString()) ;
         System.out.println(getSessionProgressString());
     }
